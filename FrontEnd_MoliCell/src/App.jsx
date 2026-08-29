@@ -13,6 +13,7 @@ import ProductPage from './pages/ProductPage/ProductPage';
 import TechnicalServicePage from './pages/TechnicalServicePage/TechnicalServicePage';
 import CatalogPage from './pages/CatalogPage/CatalogPage';
 import Footer from './components/Footer/Footer';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import { categoriaService, productoService } from './services';
 
 // Importaciones del Panel de Administración
@@ -163,6 +164,7 @@ function App() {
 
   return (
     <AdminAuthProvider>
+      <ScrollToTop />
       <Routes>
         {/* ── RUTAS PÚBLICAS DE LA TIENDA ── */}
         <Route

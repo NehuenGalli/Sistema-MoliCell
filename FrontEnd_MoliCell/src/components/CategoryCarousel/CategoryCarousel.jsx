@@ -118,7 +118,7 @@ export default function CategoryCarousel() {
   };
 
   return (
-    <section className="category-carousel-section">
+    <section className="category-carousel-section" id="categorias">
       <div className="category-carousel-wrapper">
         {/* Flecha Izquierda */}
         <button

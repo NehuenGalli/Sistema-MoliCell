@@ -11,10 +11,7 @@ export default function Offers({ productos = [], onAddToCart }) {
 
   // Filtrar ÚNICAMENTE productos que tengan activado el descuento
   const offersList = (productos || []).filter((p) => {
-    const isDiscountActive = p.descuento === true || p.descuento === 'true' || p.descuento === 1;
-    const hasDiscountPrice = p.descuento_precio && Number(p.descuento_precio) > 0 && Number(p.descuento_precio) < Number(p.precio);
-    const hasOriginalPrice = p.precioOriginal && Number(p.precioOriginal) > Number(p.precio);
-    return isDiscountActive || hasDiscountPrice || hasOriginalPrice;
+    return p.descuento === true || p.descuento === 'true' || p.descuento === 1;
   });
 
   // Mostrar una selección de ofertas en la Home (hasta 8 productos)

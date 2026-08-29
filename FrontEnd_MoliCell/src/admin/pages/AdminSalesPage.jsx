@@ -14,7 +14,8 @@ import {
   RefreshCw,
   SlidersHorizontal,
   ChevronDown,
-  RotateCcw
+  RotateCcw,
+  Eye
 } from 'lucide-react';
 import { fetchAdminVentas, createAdminVenta, fetchAdminProductos } from '../services/adminApi';
 import { productoService } from '../../services/productoService';
@@ -56,9 +57,32 @@ export default function AdminSalesPage() {
     selectedQuantity: 1
   });
 
-  // Modal Ticket (Impresión)
+  // Modal Ticket (Impresión) y Modal Detalles
   const [selectedSaleForTicket, setSelectedSaleForTicket] = useState(null);
+  const [selectedSaleForDetails, setSelectedSaleForDetails] = useState(null);
   const [toastMsg, setToastMsg] = useState({ text: '', type: 'success' });
+
+  const getSaleProfit = (sale) => {
+    if (!sale) return 0;
+    if (sale.ganancia !== undefined && sale.ganancia !== null) {
+      return Number(sale.ganancia);
+    }
+    const total = Number(sale.monto) || 0;
+    const cost = Array.isArray(sale.productos)
+      ? sale.productos.reduce((sum, p) => sum + ((Number(p.precio_costo) || 0) * (Number(p.cantidad) || 1)), 0)
+      : 0;
+    return total - cost;
+  };
+
+  const getSaleCost = (sale) => {
+    if (!sale) return 0;
+    if (sale.costo_total !== undefined && sale.costo_total !== null) {
+      return Number(sale.costo_total);
+    }
+    return Array.isArray(sale.productos)
+      ? sale.productos.reduce((sum, p) => sum + ((Number(p.precio_costo) || 0) * (Number(p.cantidad) || 1)), 0)
+      : 0;
+  };
 
   useEffect(() => {
     loadData();
@@ -543,83 +567,72 @@ export default function AdminSalesPage() {
             No se encontraron ventas para los filtros seleccionados.
           </div>
         ) : (
-          <table className="admin-table sales-table" style={{ width: '100%', minWidth: '650px' }}>
+          <table className="admin-table sales-table">
             <thead>
               <tr>
-                <th style={{ textAlign: 'center', width: '16%' }}>Código de Venta</th>
-                <th style={{ textAlign: 'center', width: '14%' }}>Fecha</th>
-                <th className="col-pago" style={{ textAlign: 'center', width: '16%' }}>Pago</th>
-                <th style={{ textAlign: 'left', paddingLeft: '20px', width: '30%' }}>Productos Vendidos</th>
-                <th style={{ textAlign: 'center', width: '14%' }}>Monto Total</th>
-                <th className="col-acciones" style={{ textAlign: 'center', width: '10%' }}>Acciones</th>
+                <th className="col-venta" style={{ textAlign: 'center' }}>Venta</th>
+                <th className="col-fecha" style={{ textAlign: 'center' }}>Fecha</th>
+                <th className="col-pago" style={{ textAlign: 'center' }}>Pago</th>
+                <th className="col-monto" style={{ textAlign: 'center' }}>Monto Total</th>
+                <th className="col-ganancia" style={{ textAlign: 'center' }}>Ganancia</th>
+                <th className="col-acciones" style={{ textAlign: 'center' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {filteredSales.map((v) => (
-                <tr key={v.id}>
-                  <td style={{ textAlign: 'center' }}>
-                    <strong className="code-pill">
-                      {v.codigo_venta || `VEN-${1000 + v.id}`}
-                    </strong>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <span className="date-text" style={{ fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
-                      {v.creado_en ? new Date(v.creado_en).toLocaleDateString('es-AR') : v.fecha}
-                    </span>
-                  </td>
-                  <td className="col-pago" style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
-                    <span style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.86rem' }}>
-                      {v.metodo_pago || '—'}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'left', paddingLeft: '20px' }}>
-                    {Array.isArray(v.productos) && v.productos.length > 0 ? (
-                      <div className="sale-products-list">
-                        {v.productos.map((p, idx) => (
-                          <div key={idx} className="sale-product-item">
-                            <span style={{ color: '#F7600A', fontWeight: 'bold' }}>•</span>
-                            <span style={{ fontWeight: 600, color: '#0F172A' }}>{p.name || `Producto #${p.producto_id}`}</span>
-                            <span style={{ color: '#64748B', fontWeight: 600, fontSize: '0.78rem' }}>x{p.cantidad}</span>
-                          </div>
-                        ))}
+              {filteredSales.map((v) => {
+                const profit = getSaleProfit(v);
+                return (
+                  <tr key={v.id}>
+                    <td className="col-venta" style={{ textAlign: 'center' }}>
+                      <strong className="code-pill">
+                        {v.codigo_venta || `VEN-${1000 + v.id}`}
+                      </strong>
+                    </td>
+                    <td className="col-fecha" style={{ textAlign: 'center' }}>
+                      <span className="date-text" style={{ fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
+                        {v.creado_en ? new Date(v.creado_en).toLocaleDateString('es-AR') : v.fecha}
+                      </span>
+                    </td>
+                    <td className="col-pago" style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.86rem' }}>
+                        {v.metodo_pago || '—'}
+                      </span>
+                    </td>
+                    <td className="col-monto" style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <strong style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.92rem' }}>
+                        ${Number(v.monto).toLocaleString('es-AR')}
+                      </strong>
+                    </td>
+                    <td className="col-ganancia" style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <strong style={{ fontWeight: 800, color: profit >= 0 ? '#166534' : '#DC2626', fontSize: '0.92rem' }}>
+                        ${profit.toLocaleString('es-AR')}
+                      </strong>
+                    </td>
+                    <td className="col-acciones" style={{ textAlign: 'center' }}>
+                      <div className="sale-row-actions">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSaleForDetails(v)}
+                          className="btn-action-details"
+                          title="Ver detalles de la venta"
+                        >
+                          <Eye size={15} />
+                          <span>Detalles</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSaleForTicket(v)}
+                          className="btn-action-ticket"
+                          title="Imprimir Comprobante de Venta"
+                        >
+                          <Printer size={15} />
+                          <span>Imprimir</span>
+                        </button>
                       </div>
-                    ) : (
-                      <span style={{ color: '#94A3B8', fontSize: '0.82rem' }}>Detalle no disponible</span>
-                    )}
-                  </td>
-                  <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
-                    <strong style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.92rem' }}>
-                      ${Number(v.monto).toLocaleString('es-AR')}
-                    </strong>
-                  </td>
-                  <td className="col-acciones" style={{ textAlign: 'center' }}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSaleForTicket(v)}
-                      className="btn-action-ticket"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        padding: '6px 14px',
-                        background: '#0F172A',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontWeight: 700,
-                        fontSize: '0.8rem',
-                        cursor: 'pointer',
-                        transition: 'background-color 150ms ease'
-                      }}
-                      title="Imprimir Ticket de Venta"
-                    >
-                      <Printer size={15} />
-                      <span>Ticket</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -871,6 +884,148 @@ export default function AdminSalesPage() {
         </div>
       )}
 
+      {/* ── MODAL DETALLES DE VENTA ── */}
+      {selectedSaleForDetails && (
+        <div className="admin-modal-overlay sale-details-modal-overlay" onClick={() => setSelectedSaleForDetails(null)}>
+          <div className="admin-modal-card sale-details-modal-card" onClick={(e) => e.stopPropagation()}>
+            
+            <div className="modal-header sale-details-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Receipt size={20} style={{ color: '#0F172A' }} />
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>
+                  Detalle de Venta: {selectedSaleForDetails.codigo_venta || `VEN-${1000 + selectedSaleForDetails.id}`}
+                </h3>
+              </div>
+              <button type="button" onClick={() => setSelectedSaleForDetails(null)} className="close-modal-btn">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="sale-details-modal-body">
+              
+              {/* Resumen de Información en Tarjetas */}
+              <div className="sale-details-grid">
+                <div className="sale-details-stat-box">
+                  <span className="stat-box-label">Fecha</span>
+                  <strong className="stat-box-value">
+                    {selectedSaleForDetails.creado_en 
+                      ? new Date(selectedSaleForDetails.creado_en).toLocaleDateString('es-AR') 
+                      : (selectedSaleForDetails.fecha ? new Date(selectedSaleForDetails.fecha).toLocaleDateString('es-AR') : '—')}
+                  </strong>
+                </div>
+
+                <div className="sale-details-stat-box">
+                  <span className="stat-box-label">Método de Pago</span>
+                  <strong className="stat-box-value">
+                    {selectedSaleForDetails.metodo_pago || '—'}
+                  </strong>
+                </div>
+
+                <div className="sale-details-stat-box">
+                  <span className="stat-box-label">Total Venta</span>
+                  <strong className="stat-box-value highlight-dark">
+                    ${Number(selectedSaleForDetails.monto).toLocaleString('es-AR')}
+                  </strong>
+                </div>
+
+                <div className="sale-details-stat-box">
+                  <span className="stat-box-label">Costo Total</span>
+                  <strong className="stat-box-value">
+                    ${getSaleCost(selectedSaleForDetails).toLocaleString('es-AR')}
+                  </strong>
+                </div>
+
+                <div className="sale-details-stat-box">
+                  <span className="stat-box-label label-profit">Ganancia</span>
+                  <strong className={`stat-box-value ${getSaleProfit(selectedSaleForDetails) >= 0 ? 'highlight-green' : 'highlight-red'}`}>
+                    ${getSaleProfit(selectedSaleForDetails).toLocaleString('es-AR')}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Lista de Productos Involucrados */}
+              <div className="sale-details-products-section">
+                <label className="sale-details-section-title">
+                  Productos en la Venta ({Array.isArray(selectedSaleForDetails.productos) ? selectedSaleForDetails.productos.length : 0})
+                </label>
+                
+                {Array.isArray(selectedSaleForDetails.productos) && selectedSaleForDetails.productos.length > 0 ? (
+                  <div className="sale-details-table-wrapper">
+                    <table className="sale-details-table">
+                      <thead>
+                        <tr>
+                          <th className="col-dt-prod" style={{ textAlign: 'left' }}>Producto</th>
+                          <th className="col-dt-cant" style={{ textAlign: 'center' }}>Cant.</th>
+                          <th className="col-dt-precio" style={{ textAlign: 'right' }}>Precio</th>
+                          <th className="col-dt-costo" style={{ textAlign: 'right' }}>P. Costo</th>
+                          <th className="col-dt-subtotal" style={{ textAlign: 'right' }}>Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedSaleForDetails.productos.map((p, idx) => {
+                          const cant = Number(p.cantidad) || 1;
+                          const pVenta = Number(p.precio) || 0;
+                          const pCosto = Number(p.precio_costo) || 0;
+                          const sub = cant * pVenta;
+                          return (
+                            <tr key={idx}>
+                              <td className="col-dt-prod col-prod-name">
+                                {p.name || `Producto #${p.producto_id}`}
+                              </td>
+                              <td className="col-dt-cant" style={{ textAlign: 'center', fontWeight: 600 }}>
+                                {cant}
+                              </td>
+                              <td className="col-dt-precio" style={{ textAlign: 'right', fontWeight: 600 }}>
+                                ${pVenta.toLocaleString('es-AR')}
+                              </td>
+                              <td className="col-dt-costo" style={{ textAlign: 'right', color: '#64748B' }}>
+                                ${pCosto.toLocaleString('es-AR')}
+                              </td>
+                              <td className="col-dt-subtotal" style={{ textAlign: 'right', fontWeight: 700 }}>
+                                ${sub.toLocaleString('es-AR')}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="sale-details-empty">
+                    No hay información de productos disponible para esta venta.
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Botones de Acción del Modal */}
+            <div className="sale-details-modal-footer">
+              <button
+                type="button"
+                onClick={() => setSelectedSaleForDetails(null)}
+                className="btn-cancel"
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const sale = selectedSaleForDetails;
+                  setSelectedSaleForDetails(null);
+                  setSelectedSaleForTicket(sale);
+                }}
+                className="btn-save btn-print-direct"
+              >
+                <Printer size={15} />
+                <span>Imprimir</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* ── MODAL IMPRESIÓN DE TICKET ── */}
       {selectedSaleForTicket && (
         <div className="admin-modal-overlay ticket-pos-modal-overlay" onClick={() => setSelectedSaleForTicket(null)}>
@@ -889,24 +1044,22 @@ export default function AdminSalesPage() {
             {/* Plantilla Formato Térmico Comprobante 80mm */}
             <div className="ticket-pos-printable" id="ticket-impresion">
               <div className="ticket-header">
-                <h4>MOLI-CELL TECH</h4>
-                <p className="ticket-subtitle">Servicio Técnico & Accesorios</p>
-                <p className="ticket-contact">Tel: 351 123 4567 | Córdoba, AR</p>
+                <h4>Moli Cell</h4>
               </div>
 
               <div className="ticket-divider"></div>
 
               <div className="ticket-meta">
                 <div className="meta-row">
-                  <span>TICKET N°:</span>
+                  <span>Ticket n°:</span>
                   <strong>{selectedSaleForTicket.codigo_venta || `VEN-${1000 + selectedSaleForTicket.id}`}</strong>
                 </div>
                 <div className="meta-row">
-                  <span>FECHA:</span>
-                  <span>{selectedSaleForTicket.creado_en ? new Date(selectedSaleForTicket.creado_en).toLocaleDateString('es-AR') : selectedSaleForTicket.fecha}</span>
+                  <span>Fecha:</span>
+                  <span>{selectedSaleForTicket.creado_en ? new Date(selectedSaleForTicket.creado_en).toLocaleDateString('es-AR') : (selectedSaleForTicket.fecha ? new Date(selectedSaleForTicket.fecha).toLocaleDateString('es-AR') : '—')}</span>
                 </div>
                 <div className="meta-row">
-                  <span>MEDIO DE PAGO:</span>
+                  <span>Medio de pago:</span>
                   <strong>{selectedSaleForTicket.metodo_pago}</strong>
                 </div>
               </div>
@@ -916,9 +1069,9 @@ export default function AdminSalesPage() {
               <table className="ticket-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '15%' }}>CANT</th>
-                    <th>PRODUCTO</th>
-                    <th style={{ textAlign: 'right', width: '35%' }}>SUBTOTAL</th>
+                    <th style={{ width: '15%' }}>Cant</th>
+                    <th>Producto</th>
+                    <th style={{ textAlign: 'right', width: '35%' }}>Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -943,14 +1096,12 @@ export default function AdminSalesPage() {
               <div className="ticket-divider"></div>
 
               <div className="ticket-total-box">
-                <span>TOTAL CON IVA:</span>
+                <span>Total:</span>
                 <strong>${Number(selectedSaleForTicket.monto).toLocaleString('es-AR')}</strong>
               </div>
 
               <div className="ticket-footer">
-                <p style={{ fontWeight: 700, marginBottom: '2px' }}>¡MUCHAS GRACIAS POR SU COMPRA!</p>
-                <p>Garantía de productos Moli-Cell</p>
-                <p>Conservar este comprobante</p>
+                <p style={{ fontWeight: 700, margin: '6px 0 0 0' }}>¡MUCHAS GRACIAS POR SU COMPRA!</p>
               </div>
             </div>
 
@@ -966,7 +1117,7 @@ export default function AdminSalesPage() {
                 style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '170px' }}
               >
                 <Printer size={17} />
-                <span>Imprimir Ticket</span>
+                <span>Imprimir</span>
               </button>
             </div>
 

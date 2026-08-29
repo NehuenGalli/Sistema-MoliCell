@@ -57,6 +57,23 @@ const Navbar = ({ cartCount = 0, categorias = [], onOpenCart }) => {
         navigate(`/catalogo?categoria=${encodeURIComponent(categoryName)}`);
     };
 
+    const handleSectionClick = (e, sectionId) => {
+        closeMobileMenu();
+        if (window.location.pathname === '/') {
+            e.preventDefault();
+            const element = document.getElementById(sectionId);
+            if (element) {
+                const navbarOffset = 85;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navbarOffset;
+                window.scrollTo({
+                    top: offsetPosition >= 0 ? offsetPosition : 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    };
+
     return (
         <header className="site-header">
             <div className="navbar-aurora">
@@ -118,7 +135,7 @@ const Navbar = ({ cartCount = 0, categorias = [], onOpenCart }) => {
                             )}
                         </div>
 
-                        <a href="/#ofertas" className="nav-link-item">Ofertas</a>
+                        <a href="/#ofertas" onClick={(e) => handleSectionClick(e, 'ofertas')} className="nav-link-item">Ofertas</a>
                         <Link to="/catalogo" className="nav-link-item">Catálogo</Link>
                         <Link to="/servicio-tecnico" className="nav-link-item">Servicio Técnico</Link>
                         <Link to="/contacto" className="nav-link-item">Contacto</Link>
@@ -304,7 +321,7 @@ const Navbar = ({ cartCount = 0, categorias = [], onOpenCart }) => {
                             </li>
 
                             <li className="mobile-drawer-item">
-                                <a href="/#ofertas" onClick={closeMobileMenu}>OFERTAS</a>
+                                <a href="/#ofertas" onClick={(e) => handleSectionClick(e, 'ofertas')}>OFERTAS</a>
                             </li>
                             <li className="mobile-drawer-item">
                                 <Link to="/catalogo" onClick={closeMobileMenu}>CATÁLOGO</Link>

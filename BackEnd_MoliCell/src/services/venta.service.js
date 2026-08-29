@@ -109,6 +109,7 @@ const obtenerVentas = async (params = {}) => {
                            'producto_id', p.id,
                            'name', p.name,
                            'precio', p.precio,
+                           'precio_costo', p.precio_costo,
                            'cantidad', vd.cantidad
                        )
                    ) FILTER (WHERE p.id IS NOT NULL), '[]'
@@ -144,7 +145,7 @@ const obtenerVentaPorId = async (id) => {
     `;
 
     const queryProductos = `
-        SELECT p.id AS producto_id, p.name, p.precio, vd.cantidad
+        SELECT p.id AS producto_id, p.name, p.precio, p.precio_costo, vd.cantidad
         FROM venta_detalle vd
         JOIN producto p ON vd.producto_id = p.id
         WHERE vd.venta_id = $1;

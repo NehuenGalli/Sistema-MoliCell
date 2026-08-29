@@ -11,6 +11,22 @@ export default function Footer({ categorias = [] }) {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20Moli-Cell!%20Tengo%20una%20consulta.`, '_blank');
   };
 
+  const handleSectionClick = (e, sectionId) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const navbarOffset = 85;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navbarOffset;
+        window.scrollTo({
+          top: offsetPosition >= 0 ? offsetPosition : 0,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+
   return (
     <footer className="footer-site">
       
@@ -45,7 +61,7 @@ export default function Footer({ categorias = [] }) {
               </button>
 
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/moli.cell?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="social-btn instagram" 
@@ -119,10 +135,10 @@ export default function Footer({ categorias = [] }) {
             <h3 className="footer-col-title">Tienda</h3>
             <ul className="footer-links-list">
               <li><Link to="/catalogo">Catálogo Completo</Link></li>
-              <li><a href="/#ofertas">Ofertas y Descuentos</a></li>
-              <li><a href="/#destacados">Productos Destacados</a></li>
+              <li><a href="/#ofertas" onClick={(e) => handleSectionClick(e, 'ofertas')}>Ofertas y Descuentos</a></li>
+              <li><a href="/#destacados" onClick={(e) => handleSectionClick(e, 'destacados')}>Productos Destacados</a></li>
               <li><Link to="/catalogo">Novedades</Link></li>
-              <li><a href="/#marcas">Nuestras Marcas</a></li>
+              <li><a href="/#marcas" onClick={(e) => handleSectionClick(e, 'marcas')}>Nuestras Marcas</a></li>
             </ul>
           </div>
 

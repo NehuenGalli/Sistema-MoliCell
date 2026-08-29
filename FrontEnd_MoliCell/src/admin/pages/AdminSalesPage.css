@@ -126,14 +126,215 @@
   color: #334155;
 }
 
-.sale-product-item {
-  display: flex;
+.sale-row-actions {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+}
+
+.btn-action-ticket,
+.btn-action-details {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn-action-details {
+  background-color: #F1F5F9;
+  color: #0F172A;
+  border: 1px solid #CBD5E1;
+}
+
+.btn-action-details:hover {
+  background-color: #E2E8F0;
+  border-color: #94A3B8;
+}
+
+.btn-action-ticket {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border: none;
 }
 
 .btn-action-ticket:hover {
   background-color: var(--color-brand-orange, #F7600A) !important;
+}
+
+/* ── Estilos Modal de Detalles de Venta ── */
+.sale-details-modal-card {
+  max-width: 620px;
+  width: 94%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 0;
+  background: #FFFFFF;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.sale-details-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #FFFFFF;
+}
+
+.sale-details-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sale-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  background: #F8FAFC;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+}
+
+.sale-details-stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat-box-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-box-label.label-profit {
+  color: #166534;
+}
+
+.stat-box-value {
+  font-size: 0.88rem;
+  color: #0F172A;
+  font-weight: 700;
+}
+
+.stat-box-value.highlight-dark {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.stat-box-value.highlight-green {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #166534;
+}
+
+.stat-box-value.highlight-red {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #DC2626;
+}
+
+.sale-details-products-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sale-details-section-title {
+  font-weight: 800;
+  color: #0F172A;
+  font-size: 0.9rem;
+}
+
+.sale-details-table-wrapper {
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  overflow: hidden;
+  overflow-x: auto;
+  background: #FFFFFF;
+}
+
+.sale-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.sale-details-table th {
+  background-color: #F1F5F9;
+  color: #475569;
+  font-weight: 700;
+  padding: 9px 12px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid #CBD5E1;
+}
+
+.sale-details-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  color: #1E293B;
+  vertical-align: middle;
+}
+
+.sale-details-table tr:last-child td {
+  border-bottom: none;
+}
+
+.col-prod-name {
+  font-weight: 600;
+  color: #0F172A;
+  word-break: break-word;
+}
+
+.sale-details-empty {
+  padding: 1.5rem;
+  text-align: center;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 8px;
+  color: #64748B;
+  font-size: 0.85rem;
+}
+
+.sale-details-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #F1F5F9;
+  background: #F8FAFC;
+}
+
+.btn-print-direct {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 
@@ -527,7 +728,54 @@
 
 @media (max-width: 768px) {
 
-  /* Tabla de ventas con scroll horizontal */
+  /* Tabla de ventas en mobile: se muestran columnas Venta, Fecha y Acciones (Detalles) */
+  .admin-table th.col-pago,
+  .admin-table td.col-pago,
+  .admin-table th.col-monto,
+  .admin-table td.col-monto,
+  .admin-table th.col-ganancia,
+  .admin-table td.col-ganancia {
+    display: none !important;
+  }
+
+  .admin-table th.col-venta,
+  .admin-table td.col-venta {
+    display: table-cell !important;
+    text-align: left !important;
+    padding: 10px 8px !important;
+  }
+
+  .admin-table th.col-fecha,
+  .admin-table td.col-fecha {
+    display: table-cell !important;
+    text-align: center !important;
+    padding: 10px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-table th.col-acciones,
+  .admin-table td.col-acciones {
+    display: table-cell !important;
+    text-align: right !important;
+    padding: 10px 8px !important;
+  }
+
+  /* Ocultar botones de imprimir en mobile */
+  .btn-action-ticket,
+  .btn-print-direct {
+    display: none !important;
+  }
+
+  .btn-action-details {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  .sale-row-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .sales-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -562,18 +810,90 @@
     font-size: 16px !important;
   }
 
-  /* Ocultar columna Acciones en mobile */
-  .admin-table th.col-acciones,
-  .admin-table td.col-acciones {
+  /* Modal de Detalles en Mobile */
+  .sale-details-modal-card {
+    width: 95%;
+    max-height: 88vh;
+    border-radius: 14px;
+  }
+
+  .sale-details-modal-header {
+    padding: 12px 16px;
+  }
+
+  .sale-details-modal-header h3 {
+    font-size: 0.95rem !important;
+  }
+
+  .sale-details-modal-body {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .sale-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .sale-details-stat-box {
+    gap: 2px;
+  }
+
+  .stat-box-label {
+    font-size: 0.68rem;
+  }
+
+  .stat-box-value {
+    font-size: 0.82rem;
+  }
+
+  .stat-box-value.highlight-dark,
+  .stat-box-value.highlight-green,
+  .stat-box-value.highlight-red {
+    font-size: 0.88rem;
+  }
+
+  /* En mobile en el modal de detalles solo mostrar producto, cantidad, precio (ocultar costo y subtotal) */
+  .sale-details-table th.col-dt-costo,
+  .sale-details-table td.col-dt-costo,
+  .sale-details-table th.col-dt-subtotal,
+  .sale-details-table td.col-dt-subtotal {
     display: none !important;
   }
 
-  /* Asegurar que la columna Pago permanezca visible y clara en mobile */
-  .admin-table th.col-pago,
-  .admin-table td.col-pago {
+  .sale-details-table th.col-dt-prod,
+  .sale-details-table td.col-dt-prod {
     display: table-cell !important;
-    white-space: nowrap;
+    text-align: left !important;
+  }
+
+  .sale-details-table th.col-dt-cant,
+  .sale-details-table td.col-dt-cant {
+    display: table-cell !important;
+    text-align: center !important;
+  }
+
+  .sale-details-table th.col-dt-precio,
+  .sale-details-table td.col-dt-precio {
+    display: table-cell !important;
+    text-align: right !important;
+  }
+
+  .sale-details-table th,
+  .sale-details-table td {
+    padding: 8px 8px;
     font-size: 0.82rem;
+  }
+
+  .sale-details-modal-footer {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .sale-details-modal-footer button {
+    flex: 1;
+    justify-content: center;
   }
 
   /* Paginación compacta */
@@ -594,5 +914,9 @@
   .banner-stat {
     padding: 12px 16px;
     flex-direction: row;
+  }
+
+  .sale-details-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

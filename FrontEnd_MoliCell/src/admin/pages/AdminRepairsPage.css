@@ -350,23 +350,23 @@
 }
 
 .ticket-repair-box {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin: 8px 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 4px 0;
+  margin: 6px 0;
 }
 
 .ticket-repair-box .box-title {
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   color: #64748B;
   margin-bottom: 2px;
 }
 
 .ticket-repair-box .box-value {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.88rem;
   color: #0F172A;
 }

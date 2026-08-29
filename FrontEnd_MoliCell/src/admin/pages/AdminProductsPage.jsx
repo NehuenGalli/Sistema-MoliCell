@@ -15,8 +15,7 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ChevronRight,
-  RotateCcw,
-  Star
+  RotateCcw
 } from 'lucide-react';
 import { 
   fetchAdminProductos, 
@@ -353,6 +352,8 @@ export default function AdminProductsPage() {
     formData.append('descuento', form.descuento);
     if (form.descuento) {
       formData.append('descuento_precio', rawDescuentoPrecio || rawPrecio);
+    } else {
+      formData.append('descuento_precio', '');
     }
     formData.append('destacado', form.destacado);
     formData.append('marca_id', parseInt(form.marca_id, 10));
@@ -502,19 +503,33 @@ export default function AdminProductsPage() {
 
     // 4. Categorías
     if (filterParams.selectedCategoryIds.length > 0) {
-      let prodCatId = p.categoria_id;
+      const selectedCatStrs = filterParams.selectedCategoryIds.map(String);
+      let prodCatIds = [];
       if (Array.isArray(p.categorias) && p.categorias.length > 0) {
-        const firstCat = p.categorias[0];
-        prodCatId = typeof firstCat === 'object' ? (firstCat.id || firstCat.id_categoria) : firstCat;
+        p.categorias.forEach(c => {
+          if (c && typeof c === 'object') {
+            if (c.id !== undefined) prodCatIds.push(String(c.id));
+            if (c.id_categoria !== undefined) prodCatIds.push(String(c.id_categoria));
+          } else if (c) {
+            prodCatIds.push(String(c));
+          }
+        });
       }
-      if (!filterParams.selectedCategoryIds.map(String).includes(String(prodCatId))) {
-        return false;
+      if (p.categoria_id !== undefined && p.categoria_id !== null) {
+        prodCatIds.push(String(p.categoria_id));
       }
+      if (p.id_categoria !== undefined && p.id_categoria !== null) {
+        prodCatIds.push(String(p.id_categoria));
+      }
+      const matchesCategory = selectedCatStrs.some(id => prodCatIds.includes(id));
+      if (!matchesCategory) return false;
     }
 
     // 5. Marcas
     if (filterParams.selectedBrandIds.length > 0) {
-      if (!filterParams.selectedBrandIds.map(String).includes(String(p.marca_id))) {
+      const selectedBrandStrs = filterParams.selectedBrandIds.map(String);
+      const prodBrandId = String(p.marca_id || p.id_marca || (typeof p.marca === 'object' ? (p.marca?.id || p.marca?.id_marca) : '') || '');
+      if (!selectedBrandStrs.includes(prodBrandId)) {
         return false;
       }
     }
@@ -666,10 +681,7 @@ export default function AdminProductsPage() {
                     checked={filterParams.soloDestacados}
                     onChange={(e) => setFilterParams(prev => ({ ...prev, soloDestacados: e.target.checked }))}
                   />
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>Solo Destacados</span>
-                    <Star size={15} fill="#F59E0B" color="#F59E0B" />
-                  </span>
+                  <span>Solo Destacados</span>
                 </label>
               </div>
 
@@ -791,7 +803,6 @@ export default function AdminProductsPage() {
                 <th>Precio Venta</th>
                 <th>Stock</th>
                 <th>Estado</th>
-                <th style={{ textAlign: 'center' }}>Destacado</th>
                 <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
@@ -817,17 +828,16 @@ export default function AdminProductsPage() {
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <strong className="product-name-title">{p.name || p.nombre}</strong>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {p.destacado && (
-                            <span className="featured-tag">
-                              <Star size={11} fill="#D97706" color="#D97706" />
-                              <span>DESTACADO</span>
-                            </span>
-                          )}
-                          {p.descuento && (
-                            <span className="discount-tag">CON DESCUENTO</span>
-                          )}
-                        </div>
+                        {(p.destacado || p.descuento) && (
+                          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {p.destacado && (
+                              <span className="featured-tag">DESTACADO</span>
+                            )}
+                            {p.descuento && (
+                              <span className="discount-tag">CON DESCUENTO</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td>
@@ -852,20 +862,6 @@ export default function AdminProductsPage() {
                           Activo
                         </span>
                       )}
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        className={`star-destacado-btn ${p.destacado ? 'is-featured' : ''}`}
-                        onClick={() => handleToggleDestacado(prodId, !!p.destacado, p.name || p.nombre)}
-                        title={p.destacado ? 'Quitar de destacados' : 'Marcar como producto destacado'}
-                      >
-                        <Star 
-                          size={18} 
-                          fill={p.destacado ? '#F59E0B' : 'none'} 
-                          color={p.destacado ? '#F59E0B' : '#94A3B8'} 
-                        />
-                      </button>
                     </td>
                     <td>
                       <div className="actions-flex">
@@ -1171,7 +1167,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ justifyContent: 'flex-end' }}>
                   <div className="destacado-toggle-card">
                     <label className="admin-checkbox-label">
                       <input
@@ -1179,8 +1175,7 @@ export default function AdminProductsPage() {
                         checked={form.destacado}
                         onChange={(e) => setForm(prev => ({ ...prev, destacado: e.target.checked }))}
                       />
-                      <Star size={16} fill={form.destacado ? '#F59E0B' : 'none'} color={form.destacado ? '#F59E0B' : '#64748B'} />
-                      <span>¿Marcar como Producto Destacado?</span>
+                      <span>Producto destacado</span>
                     </label>
                   </div>
                 </div>

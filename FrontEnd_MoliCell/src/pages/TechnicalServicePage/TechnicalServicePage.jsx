@@ -7,9 +7,6 @@ import {
   MapPin, 
   Phone, 
   MessageCircle, 
-  ShieldCheck, 
-  Users, 
-  Award,
   CheckCircle2,
   AlertCircle,
   Search,
@@ -375,39 +372,12 @@ export default function TechnicalServicePage() {
                 </svg>
                 <div>
                   <strong>Instagram</strong>
-                  <p><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">@moli.cell</a></p>
+                  <p><a href="https://www.instagram.com/moli.cell?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">@moli.cell</a></p>
                 </div>
               </li>
             </ul>
           </div>
 
-        </section>
-
-        {/* ── 5. BARRA DE GARANTÍA Y CONFIANZA (PIE DE PÁGINA) ── */}
-        <section className="tech-trust-bar">
-          <div className="trust-bar-item">
-            <ShieldCheck size={28} className="trust-bar-icon" />
-            <div>
-              <h4>Garantía escrita</h4>
-              <p>Todos nuestros trabajos cuentan con garantía.</p>
-            </div>
-          </div>
-
-          <div className="trust-bar-item">
-            <Users size={28} className="trust-bar-icon" />
-            <div>
-              <h4>Técnicos especializados</h4>
-              <p>Contamos con técnicos capacitados y en constante formación.</p>
-            </div>
-          </div>
-
-          <div className="trust-bar-item">
-            <Award size={28} className="trust-bar-icon" />
-            <div>
-              <h4>Repuestos originales</h4>
-              <p>Trabajamos con repuestos de alta calidad y proveedores confiables.</p>
-            </div>
-          </div>
         </section>
 
       </div>

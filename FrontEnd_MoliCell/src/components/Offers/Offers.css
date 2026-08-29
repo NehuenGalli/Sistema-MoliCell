@@ -56,20 +56,22 @@
   gap: 6px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--color-brand-orange, #F7600A);
+  color: #FFFFFF;
   text-decoration: none;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
-  background-color: #FFF3E0;
-  border: 1px solid rgba(247, 96, 10, 0.2);
+  background-color: var(--color-brand-orange, #F7600A);
+  border: 1px solid var(--color-brand-orange, #F7600A);
+  box-shadow: 0 2px 8px rgba(247, 96, 10, 0.25);
   transition: all var(--transition-fast, 160ms ease-out);
 }
 
 .offers-view-all-link:hover {
-  background-color: var(--color-brand-orange, #F7600A);
+  background-color: #E05305;
+  border-color: #E05305;
   color: #FFFFFF;
-  border-color: var(--color-brand-orange, #F7600A);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(247, 96, 10, 0.35);
 }
 
 /* Controles de Navegación */

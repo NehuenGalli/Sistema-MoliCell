@@ -197,7 +197,7 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
 
         // Ofertas
         if (onlyOffers) {
-          const isOffer = p.descuento || (p.descuento_precio && p.descuento_precio < p.precio);
+          const isOffer = p.descuento === true || p.descuento === 'true' || p.descuento === 1;
           if (!isOffer) return false;
         }
 

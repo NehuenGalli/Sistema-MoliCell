@@ -18,7 +18,7 @@ const BRANDS_LIST = [
 
 export default function BrandsBar({ brands = BRANDS_LIST }) {
   return (
-    <section className="brands-section" aria-label="Nuestras marcas">
+    <section className="brands-section" id="marcas" aria-label="Nuestras marcas">
       <div className="brands-container">
         
         {/* Título lateral "Nuestras marcas" */}

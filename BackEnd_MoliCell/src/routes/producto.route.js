@@ -45,12 +45,22 @@ const preprocesarBody = (req, res, next) => {
 
     if (req.body.descuento !== undefined) {
         req.body.descuento = req.body.descuento === 'true' || req.body.descuento === true;
+        if (!req.body.descuento) {
+            req.body.descuento_precio = null;
+        }
     }
 
-    if (req.body.descuento_precio !== undefined && req.body.descuento_precio !== null) {
-        if (typeof req.body.descuento_precio === 'string') {
-            const val = parseFloat(req.body.descuento_precio.trim());
-            req.body.descuento_precio = isNaN(val) ? null : val;
+    if (req.body.descuento_precio !== undefined) {
+        if (req.body.descuento_precio === null || req.body.descuento_precio === '') {
+            req.body.descuento_precio = null;
+        } else if (typeof req.body.descuento_precio === 'string') {
+            const trimmed = req.body.descuento_precio.trim();
+            if (trimmed === '') {
+                req.body.descuento_precio = null;
+            } else {
+                const val = parseFloat(trimmed);
+                req.body.descuento_precio = isNaN(val) ? null : val;
+            }
         }
     }
 

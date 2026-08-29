@@ -334,7 +334,7 @@ export default function AdminRepairsPage() {
                 >
                   <option value="todos">Todos los Estados</option>
                   <option value="Pendiente">Pendiente de Revisión</option>
-                  <option value="En Proceso">En Proceso de Reparación</option>
+                  <option value="En Proceso">En Proceso</option>
                   <option value="Listo">Listo para Retirar</option>
                   <option value="Entregado">Entregado al Cliente</option>
                 </select>
@@ -707,7 +707,7 @@ export default function AdminRepairsPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Número / Teléfono del Cliente *</label>
+                  <label>Teléfono del Cliente *</label>
                   <input
                     type="text"
                     className={formErrors.telefono ? 'input-has-error' : ''}
@@ -716,7 +716,7 @@ export default function AdminRepairsPage() {
                       setForm(prev => ({ ...prev, telefono: e.target.value }));
                       if (formErrors.telefono) setFormErrors(prev => ({ ...prev, telefono: '' }));
                     }}
-                    placeholder="Ej: 351 123 4567"
+                    placeholder="Ej: 11 23456789"
                   />
                   {formErrors.telefono && (
                     <span className="field-error-text">{formErrors.telefono}</span>
@@ -726,7 +726,7 @@ export default function AdminRepairsPage() {
 
               <div className="form-grid-2">
                 <div className="form-group">
-                  <label>Marca y Modelo del Dispositivo *</label>
+                  <label>Dispositivo *</label>
                   <input
                     type="text"
                     className={formErrors.dispositivo ? 'input-has-error' : ''}
@@ -768,7 +768,7 @@ export default function AdminRepairsPage() {
                     onChange={(e) => setForm(prev => ({ ...prev, estado: e.target.value }))}
                   >
                     <option value="Pendiente">Pendiente de Revisión</option>
-                    <option value="En Proceso">En Proceso de Reparación</option>
+                    <option value="En Proceso">En Proceso</option>
                     <option value="Listo">Listo para Retirar</option>
                     <option value="Entregado">Entregado al Cliente</option>
                   </select>
@@ -819,78 +819,61 @@ export default function AdminRepairsPage() {
             {/* Plantilla Formato Térmico POS 80mm */}
             <div className="ticket-repair-printable" id="ticket-reparacion-impresion">
               <div className="ticket-repair-header">
-                <h4>MOLI-CELL TECH</h4>
-                <p className="ticket-repair-subtitle">Servicio Técnico Especializado</p>
-                <p className="ticket-repair-contact">Tel: 351 123 4567 | Córdoba, AR</p>
+                <h4>Moli Cell</h4>
               </div>
 
               <div className="ticket-repair-divider"></div>
 
               <div className="ticket-repair-meta">
                 <div className="meta-row">
-                  <span>ORDEN N°:</span>
+                  <span>Orden n°:</span>
                   <strong>{selectedRepairForTicket.codigo_seguimiento || selectedRepairForTicket.codigo || `MC-${1000 + selectedRepairForTicket.id}`}</strong>
                 </div>
                 <div className="meta-row">
-                  <span>FECHA INGRESO:</span>
-                  <span>{selectedRepairForTicket.creado_en ? new Date(selectedRepairForTicket.creado_en).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' }) : 'Reciente'}</span>
-                </div>
-                <div className="meta-row">
-                  <span>ESTADO:</span>
-                  <strong style={{ textTransform: 'uppercase' }}>{selectedRepairForTicket.estado || 'En Proceso'}</strong>
+                  <span>Fecha Ingreso:</span>
+                  <span>
+                    {selectedRepairForTicket.creado_en 
+                      ? new Date(selectedRepairForTicket.creado_en).toLocaleDateString('es-AR') 
+                      : (selectedRepairForTicket.fecha_ingreso ? new Date(selectedRepairForTicket.fecha_ingreso).toLocaleDateString('es-AR') : '—')}
+                  </span>
                 </div>
               </div>
 
               <div className="ticket-repair-divider"></div>
 
               <div className="ticket-repair-box">
-                <div className="box-title">CLIENTE</div>
-                <div className="box-value">{selectedRepairForTicket.cliente_nombre || selectedRepairForTicket.cliente || 'Consumidor Final'}</div>
-                {(selectedRepairForTicket.cliente_telefono || selectedRepairForTicket.telefono) && (
-                  <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '2px' }}>
-                    TEL: {selectedRepairForTicket.cliente_telefono || selectedRepairForTicket.telefono}
-                  </div>
-                )}
-              </div>
-
-              <div className="ticket-repair-box">
-                <div className="box-title">EQUIPO / DISPOSITIVO</div>
+                <div className="box-title">Equipo/Dispositivo</div>
                 <div className="box-value">{selectedRepairForTicket.dispositivo}</div>
               </div>
 
               <div className="ticket-repair-box">
-                <div className="box-title">SERVICIO SOLICITADO</div>
+                <div className="box-title">Servicio Realizado</div>
                 <div className="box-value" style={{ fontWeight: 700, fontSize: '0.84rem' }}>
-                  {selectedRepairForTicket.falla_descripcion || selectedRepairForTicket.falla}
+                  {selectedRepairForTicket.falla_descripcion || selectedRepairForTicket.falla || selectedRepairForTicket.servicio || selectedRepairForTicket.trabajo_realizado || 'Revisión técnica'}
                 </div>
               </div>
 
               <div className="ticket-repair-divider"></div>
 
-              <div className="ticket-repair-meta" style={{ fontSize: '0.9rem' }}>
+              <div className="ticket-repair-meta" style={{ fontSize: '0.92rem' }}>
                 <div className="meta-row">
-                  <span>PRESUPUESTO EST.:</span>
-                  <strong style={{ fontSize: '0.95rem', color: '#0F172A' }}>
-                    {selectedRepairForTicket.presupuesto_estimado !== undefined && selectedRepairForTicket.presupuesto_estimado !== null && selectedRepairForTicket.presupuesto_estimado !== ''
-                      ? `$${Number(selectedRepairForTicket.presupuesto_estimado).toLocaleString('es-AR')}`
-                      : 'A Confirmar'}
+                  <span style={{ fontWeight: 800 }}>Total:</span>
+                  <strong style={{ fontSize: '1.05rem', color: '#0F172A' }}>
+                    {(() => {
+                      const rawTotal = selectedRepairForTicket.costo_estimado ?? selectedRepairForTicket.costoEstimado ?? selectedRepairForTicket.presupuesto_estimado ?? selectedRepairForTicket.precio ?? selectedRepairForTicket.monto;
+                      if (rawTotal !== undefined && rawTotal !== null && rawTotal !== '' && !isNaN(Number(rawTotal))) {
+                        return `$${Number(rawTotal).toLocaleString('es-AR')}`;
+                      }
+                      return rawTotal || 'A Confirmar';
+                    })()}
                   </strong>
                 </div>
-              </div>
-
-              <div className="ticket-repair-signature">
-                <div style={{ margin: '18px 0 4px 0' }}>_______________________________</div>
-                <span>Firma de Conformidad del Cliente</span>
               </div>
 
               <div className="ticket-repair-divider"></div>
 
               <div className="ticket-repair-footer">
-                <p style={{ fontWeight: 700, marginBottom: '4px' }}>TÉRMINOS Y CONDICIONES</p>
-                <p>• Conservá este comprobante para el retiro del equipo.</p>
-                <p>• Garantía de 30 días únicamente sobre la reparación efectuada.</p>
-                <p>• Pasados 60 días sin retirar, el equipo será considerado en abandono.</p>
-                <p style={{ marginTop: '6px', fontWeight: 700 }}>¡Gracias por confiar en Moli-Cell!</p>
+                <p style={{ margin: '8px 0 0 0', fontWeight: 700, fontSize: '0.82rem' }}>¡Gracias por confiar en Moli-Cell!</p>
               </div>
             </div>
 
@@ -906,7 +889,7 @@ export default function AdminRepairsPage() {
                 style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '180px' }}
               >
                 <Printer size={17} />
-                <span>Imprimir Ticket</span>
+                <span>Imprimir</span>
               </button>
             </div>
 
