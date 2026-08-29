@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  /* Paleta de Colores de Moli-Cell */
+  --color-brand-orange: #F7600A;
+  /* CTA, descuentos, botones primarios, estados activos */
+  --color-brand-lime: #84CC16;
+  /* WhatsApp, indicadores de stock positivo, acentos */
+
+  /* Escala de Grises y Neutros */
+  --color-black: #111111;
+  /* Texto primario, header, fondos oscuros */
+  --color-graphite: #2D2D2D;
+  /* Texto secundario, fondos de tarjetas oscuras */
+  --color-gray-100: #F5F5F5;
+  /* Fondo base de la web, secciones alternas */
+  --color-gray-200: #E8E8E8;
+  /* Bordes de tarjetas y divisores */
+  --color-gray-400: #9CA3AF;
+  /* Texto terciario, placeholders de inputs */
+  --color-white: #FFFFFF;
+  /* Tarjetas de productos, dropdowns, modales */
+
+  /* Estados del sistema */
+  --color-danger: #DC2626;
+  /* Errores, alertas, sin stock */
+
+  /* Tipografía */
+  --font-family-base: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Radios (Border-radius moderado, evitando el aspecto "IA") */
+  --radius-xs: 2px;
+  /* Badges de descuento, pequeñas etiquetas */
+  --radius-sm: 4px;
+  /* Inputs, botones internos pequeños */
+  --radius-md: 6px;
+  /* Cards de producto, contenedores principales */
+  --radius-lg: 8px;
+  /* Drawers, modales, menú desplegable */
+
+  /* Transiciones y Animaciones (Sutiles y comerciales) */
+  --transition-fast: 160ms ease-out;
+  /* Hover en tarjetas, cambios de color en botones */
+  --transition-drawer: 280ms cubic-bezier(0.32, 0.72, 0, 1);
+  /* Apertura de carrito y menú mobile */
+
+  /* Sombras (evitando el efecto flotante excesivo) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-drawer: -4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-gray-100);
+  color: var(--color-black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-family-base);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Estilos de Errores de Validación de Formularios ── */
+.field-error-text {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #EF4444;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.input-has-error {
+  border-color: #EF4444 !important;
+  background-color: #FEF2F2 !important;
+}
+
+.input-has-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}

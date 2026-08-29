@@ -1,0 +1,361 @@
+/* =====================================================================
+   PÁGINA CONTACTO — 100% Responsivo
+   ===================================================================== */
+
+.cp-page {
+  min-height: calc(100vh - 110px);
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Contenedor principal alineado y acotado ───────────────────── */
+.cp-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Zona superior: grid de 2 columnas ──────────────────────────── */
+.cp-top {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: start;
+  padding: 60px 0 48px 0;
+  box-sizing: border-box;
+}
+
+/* ─── COLUMNA IZQUIERDA ────────────────────────────────────────── */
+
+.cp-left {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.cp-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.cp-subtitle {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #5A5A5A;
+  line-height: 1.7;
+  max-width: 400px;
+  margin: 0;
+}
+
+/* Datos de contacto */
+.cp-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cp-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 0.93rem;
+  color: #333333;
+}
+
+.cp-info-item--clock {
+  align-items: flex-start;
+}
+
+.cp-info-icon {
+  color: var(--color-black, #111111);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cp-info-link {
+  color: #333333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 140ms ease;
+}
+
+.cp-info-link:hover {
+  color: var(--color-brand-orange, #F7600A);
+}
+
+.cp-info-text {
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* Horarios */
+.cp-horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cp-horario-row {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.cp-horario-dias {
+  color: #555555;
+  min-width: 148px;
+}
+
+.cp-horario-val {
+  font-weight: 600;
+  color: var(--color-black, #111111);
+}
+
+/* ─── COLUMNA DERECHA — formulario sin borde ───────────────────── */
+
+.cp-right {
+  position: sticky;
+  top: 110px;
+}
+
+/* Card sin borde — fondo gris suave */
+.cp-form-card {
+  background-color: #F7F7F7;
+  border-radius: 12px;
+  padding: 44px 40px;
+  box-sizing: border-box;
+}
+
+.cp-form-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-black, #111111);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.2px;
+}
+
+.cp-form-desc {
+  font-size: 0.85rem;
+  color: #777777;
+  margin: 0 0 36px 0;
+  line-height: 1.55;
+}
+
+/* Formulario */
+.cp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cp-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cp-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #444444;
+}
+
+.cp-required {
+  color: #E53E3E;
+  margin-left: 2px;
+}
+
+/* Inputs — estilo línea inferior elegante */
+.cp-input,
+.cp-textarea {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 0.92rem;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  color: var(--color-black, #111111);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #CCCCCC;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 150ms ease;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.cp-input::placeholder,
+.cp-textarea::placeholder {
+  color: #BBBBBB;
+}
+
+.cp-input:focus,
+.cp-textarea:focus {
+  border-bottom-color: var(--color-black, #111111);
+}
+
+/* Botón */
+.cp-btn-submit {
+  width: 100%;
+  padding: 14px 20px;
+  margin-top: 8px;
+  background-color: var(--color-black, #111111);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-family-base);
+  letter-spacing: 0.3px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+
+.cp-btn-submit:hover:not(:disabled) {
+  background-color: #25D366;
+}
+
+.cp-btn-submit:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.cp-btn-submit.cp-btn-sent {
+  background-color: #25D366;
+  cursor: default;
+}
+
+/* ── MAPA ABAJO — Contenido dentro del contenedor principal ────── */
+.cp-map-section {
+  width: 100%;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 64px;
+  box-sizing: border-box;
+}
+
+.cp-map-section iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* =====================================================================
+   RESPONSIVE BREAKPOINTS (100% ADAPTABLE)
+   ===================================================================== */
+
+@media (max-width: 1024px) {
+  .cp-top {
+    gap: 40px;
+    padding: 48px 0 36px 0;
+  }
+
+  .cp-title {
+    font-size: 2.6rem;
+  }
+
+  .cp-map-section {
+    height: 320px;
+  }
+}
+
+@media (max-width: 840px) {
+  .cp-top {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 40px 0 32px 0;
+  }
+
+  .cp-right {
+    position: static;
+  }
+
+  .cp-left {
+    gap: 24px;
+  }
+
+  .cp-subtitle {
+    max-width: 100%;
+  }
+
+  .cp-title {
+    font-size: 2.2rem;
+  }
+
+  .cp-form-card {
+    padding: 32px 24px;
+  }
+
+  .cp-map-section {
+    height: 280px;
+    border-radius: 12px;
+    margin-bottom: 48px;
+  }
+}
+
+@media (max-width: 580px) {
+  .cp-container {
+    padding: 0 16px;
+  }
+
+  .cp-top {
+    padding: 28px 0 24px 0;
+    gap: 32px;
+  }
+
+  .cp-title {
+    font-size: 1.85rem;
+    letter-spacing: -0.8px;
+  }
+
+  .cp-horarios {
+    gap: 4px;
+  }
+
+  .cp-horario-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cp-horario-dias {
+    min-width: auto;
+  }
+
+  .cp-form-card {
+    padding: 24px 18px;
+  }
+
+  .cp-row-2 {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cp-map-section {
+    height: 240px;
+    border-radius: 10px;
+    margin-bottom: 36px;
+  }
+}

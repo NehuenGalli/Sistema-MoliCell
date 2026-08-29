@@ -1,0 +1,598 @@
+/* =========================================================
+   ESTILOS HISTORIAL DE VENTAS ADMIN — Moli-Cell Admin
+   ========================================================= */
+
+.admin-sales-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sales-metrics-banner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.banner-stat {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 150ms ease;
+}
+
+.banner-stat:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+  color: var(--color-brand-orange, #F7600A);
+  background-color: rgba(247, 96, 10, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  box-sizing: content-box;
+}
+
+.banner-stat span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.banner-stat h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 2px 0 0 0;
+}
+
+.date-text {
+  font-size: 0.82rem;
+  color: #64748B;
+}
+
+.sale-amount {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #166534;
+}
+
+/* ── Estilos Tabla de Ventas & Badges de Método de Pago ── */
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-table th {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  background-color: #F8FAFC;
+  padding: 14px 16px;
+  border-bottom: 1px solid #E2E8F0;
+  vertical-align: middle;
+}
+
+.sales-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 0.88rem;
+}
+
+.sales-table tr:hover {
+  background-color: #F8FAFC;
+}
+
+.code-pill {
+  display: inline-block;
+  background: transparent;
+  color: #0F172A;
+  padding: 0;
+  border-radius: 0;
+  font-family: monospace;
+  font-size: 0.86rem;
+  font-weight: 700;
+  border: none;
+}
+
+
+
+.sale-amount-tag {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0F172A;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  display: inline;
+}
+
+.sale-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.sale-product-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-action-ticket:hover {
+  background-color: var(--color-brand-orange, #F7600A) !important;
+}
+
+
+/* Menú Desplegable de Filtros */
+.admin-filter-dropdown-wrapper {
+  position: relative;
+}
+
+.admin-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.admin-filter-btn:hover {
+  background-color: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.admin-filter-btn.active {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.filter-badge {
+  background-color: #F7600A;
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Overlay & Panel Drawer Lateral Izquierdo de Filtros */
+.filter-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-start;
+  /* Alineado a la IZQUIERDA como en el catálogo */
+}
+
+.filter-drawer-panel.left-side {
+  width: 330px;
+  max-width: 85vw;
+  height: 100%;
+  background: #FFFFFF;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  animation: slideRightIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideRightIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.filter-drawer-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+}
+
+.filter-drawer-body {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-drawer-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+}
+
+.filter-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-field-group label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.filter-field-group select,
+.filter-field-group input {
+  padding: 8px 12px;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background-color: #FFFFFF;
+}
+
+.filter-price-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-price-inputs input {
+  width: 100%;
+}
+
+.filter-menu-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.btn-reset-filters {
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-reset-filters:hover {
+  color: #EF4444;
+}
+
+.btn-apply-filters {
+  padding: 8px 14px;
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Estilos Barra de Paginación */
+.admin-pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding: 12px 18px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #F1F5F9;
+  color: #0F172A;
+  border-color: #94A3B8;
+}
+
+.pagination-btn.active {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Ticket POS Visual Preview */
+.ticket-pos-printable {
+  font-family: 'Courier New', Courier, monospace;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  color: #0F172A;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.ticket-header {
+  text-align: center;
+}
+
+.ticket-header h4 {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #0F172A;
+}
+
+.ticket-subtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.ticket-contact {
+  margin: 2px 0 0 0;
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.ticket-divider {
+  border-bottom: 2px dashed #CBD5E1;
+  margin: 12px 0;
+}
+
+.ticket-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.82rem;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.82rem;
+}
+
+.ticket-table th {
+  text-align: left;
+  padding: 6px 0;
+  border-bottom: 1px solid #0F172A;
+  font-weight: 800;
+}
+
+.ticket-table td {
+  padding: 6px 0;
+  border-bottom: 1px dashed #E2E8F0;
+}
+
+.ticket-total-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #F1F5F9;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.ticket-footer {
+  text-align: center;
+  font-size: 0.76rem;
+  color: #475569;
+  margin-top: 8px;
+}
+
+.ticket-footer p {
+  margin: 2px 0;
+}
+
+/* Reglas de impresión térmicas POS (80mm printer) */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .ticket-pos-modal-overlay,
+  .ticket-pos-printable,
+  .ticket-pos-printable * {
+    visibility: visible !important;
+  }
+
+  .ticket-pos-modal-overlay {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #FFFFFF !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .ticket-pos-modal-card {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+  }
+
+  .ticket-pos-printable {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .sales-metrics-banner {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .banner-stat {
+    padding: 12px 14px;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .stat-icon {
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  .banner-stat h3 {
+    font-size: 1.1rem;
+  }
+
+  .banner-stat span {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Tabla de ventas con scroll horizontal */
+  .sales-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -2px;
+    padding: 0 2px;
+  }
+
+  .products-table-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .admin-filter-btn {
+    order: 1;
+    padding: 10px 12px;
+    flex-shrink: 0;
+  }
+
+  .products-table-controls .search-box {
+    order: 2;
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Prevenir Auto-Zoom en celulares al hacer foco */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Ocultar columna Acciones en mobile */
+  .admin-table th.col-acciones,
+  .admin-table td.col-acciones {
+    display: none !important;
+  }
+
+  /* Asegurar que la columna Pago permanezca visible y clara en mobile */
+  .admin-table th.col-pago,
+  .admin-table td.col-pago {
+    display: table-cell !important;
+    white-space: nowrap;
+    font-size: 0.82rem;
+  }
+
+  /* Paginación compacta */
+  .admin-pagination-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sales-metrics-banner {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .banner-stat {
+    padding: 12px 16px;
+    flex-direction: row;
+  }
+}

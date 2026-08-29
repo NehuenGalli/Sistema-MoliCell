@@ -1,0 +1,437 @@
+/* =========================================================
+   ESTILOS SERVICIO TÉCNICO ADMIN — Moli-Cell Admin
+   ========================================================= */
+
+.admin-repairs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.falla-subtext {
+  font-size: 0.8rem;
+  color: #475569;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Botón Ver Más para Mobile */
+.btn-ver-mas {
+  padding: 6px 12px;
+  background-color: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  color: #0F172A;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 120ms ease;
+  font-family: var(--font-family-base);
+}
+
+.btn-ver-mas:hover {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+/* ── Timeline Stepper del Modal Detalle ── */
+.repair-timeline-container {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.repair-timeline-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  margin-bottom: 14px;
+}
+
+.repair-timeline-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  flex: 1;
+  position: relative;
+}
+
+.stepper-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid #CBD5E1;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+}
+
+.stepper-step.completed .stepper-icon-circle {
+  background-color: #10B981;
+  border-color: #10B981;
+  color: #FFFFFF;
+}
+
+.stepper-step.active .stepper-icon-circle {
+  background-color: #F7600A;
+  border-color: #F7600A;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(247, 96, 10, 0.18);
+}
+
+.stepper-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748B;
+  text-align: center;
+}
+
+.stepper-step.active .stepper-label {
+  color: #0F172A;
+  font-weight: 800;
+}
+
+.stepper-step.completed .stepper-label {
+  color: #10B981;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 15px;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background-color: #E2E8F0;
+  z-index: 1;
+}
+
+.stepper-line-progress {
+  height: 100%;
+  background-color: #10B981;
+  transition: width 300ms ease;
+}
+
+/* ── Tarjetas Informativas del Modal Ver Más ── */
+.detail-modal-card {
+  max-width: 540px !important;
+  width: 95% !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25) !important;
+  background: #FFFFFF;
+}
+
+.detail-modal-header {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-modal-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #FFFFFF;
+}
+
+.detail-modal-body {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detail-card-box {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-card-box.full-width {
+  grid-column: span 2;
+}
+
+.detail-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-card-value {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.detail-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 5px 12px;
+  background-color: #DCFCE7;
+  color: #15803D;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+  width: fit-content;
+}
+
+.detail-whatsapp-btn:hover {
+  background-color: #BBF7D0;
+}
+
+/* Reglas de visualización responsive en celular (< 768px) */
+@media (max-width: 768px) {
+  .col-mobile-hide {
+    display: none !important;
+  }
+
+  .desktop-actions-only {
+    display: none !important;
+  }
+
+  .mobile-actions-only {
+    display: inline-flex !important;
+    align-items: center;
+  }
+
+  .repairs-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding: 0 4px;
+  }
+
+  .repairs-table-wrap table td,
+  .repairs-table-wrap table th {
+    padding: 10px 10px;
+  }
+
+  .client-name-cell {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card-box.full-width {
+    grid-column: span 1;
+  }
+
+  /* Ocultar el camino de estado de avance en mobile */
+  .repair-timeline-container {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-actions-only {
+    display: none !important;
+  }
+}
+
+/* ── TICKET IMPRESIÓN REPARACIÓN POS 80MM ── */
+.btn-action.ticket {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+.btn-action.ticket:hover {
+  background-color: #0F172A;
+  color: #FFFFFF;
+}
+
+.ticket-repair-modal-overlay {
+  z-index: 2500;
+}
+
+.ticket-repair-printable {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-family: 'Courier New', Courier, monospace, sans-serif;
+  padding: 16px;
+  border: 1px dashed #CBD5E1;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.ticket-repair-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.ticket-repair-header h4 {
+  margin: 0 0 2px 0;
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-family: inherit;
+}
+
+.ticket-repair-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+}
+
+.ticket-repair-contact {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  color: #64748B;
+}
+
+.ticket-repair-divider {
+  border-bottom: 1px dashed #0F172A;
+  margin: 10px 0;
+}
+
+.ticket-repair-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.ticket-repair-meta .meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-repair-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+
+.ticket-repair-box .box-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 2px;
+}
+
+.ticket-repair-box .box-value {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #0F172A;
+}
+
+.ticket-repair-signature {
+  margin-top: 22px;
+  padding-top: 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.ticket-repair-footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  color: #475569;
+}
+
+.ticket-repair-footer p {
+  margin: 2px 0;
+}
+
+/* Reglas de Impresión Navegador */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .ticket-repair-modal-overlay,
+  .ticket-repair-printable,
+  .ticket-repair-printable * {
+    visibility: visible !important;
+  }
+
+  .ticket-repair-modal-overlay {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #FFFFFF !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .ticket-repair-modal-card {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+  }
+
+  .ticket-repair-printable {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,118 @@
+.sub-navbar {
+  display: block;
+  background-color: var(--color-brand-orange, #F7600A);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 900;
+}
+
+.sub-navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: block;
+}
+
+.sub-navbar-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 32px;
+  height: 44px;
+}
+
+.sub-navbar-links li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.sub-navbar-links a,
+.dropdown-toggle {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 4px;
+  transition: opacity var(--transition-fast, 160ms ease-out);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.sub-navbar-links a:hover,
+.dropdown-toggle:hover {
+  opacity: 0.85;
+}
+
+.arrow-icon {
+  transition: transform var(--transition-fast, 160ms ease-out);
+}
+
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Desplegable */
+.dropdown-item {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-black, #111111);
+  min-width: 220px;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  border-radius: 0 0 var(--radius-md, 6px) var(--radius-md, 6px);
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--color-brand-orange, #F7600A);
+  animation: fadeIn 150ms ease-out;
+}
+
+.dropdown-link {
+  color: #E8E8E8 !important;
+  padding: 10px 16px !important;
+  font-size: 0.825rem !important;
+  font-weight: 500 !important;
+  text-transform: none;
+  transition: background-color var(--transition-fast, 160ms ease-out), color var(--transition-fast, 160ms ease-out) !important;
+}
+
+.dropdown-link:hover {
+  background-color: #222222;
+  color: var(--color-brand-orange, #F7600A) !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ocultar ÚNICAMENTE en dispositivos móviles (768px o menos) */
+@media screen and (max-width: 768px) {
+  .sub-navbar {
+    display: none !important;
+  }
+}

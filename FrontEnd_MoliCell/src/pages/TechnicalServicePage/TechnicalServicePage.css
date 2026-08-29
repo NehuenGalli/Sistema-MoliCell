@@ -1,0 +1,671 @@
+/* =========================================================
+   PÁGINA DE SERVICIO TÉCNICO — Fiel a la foto de referencia
+   ========================================================= */
+
+.tech-page {
+  min-height: calc(100vh - 110px);
+  background-color: #FFFFFF;
+  font-family: var(--font-family-base);
+  padding-bottom: 80px;
+}
+
+/* ── 1. HERO BANNER CON FOTO TÉCNICA ── */
+.tech-hero {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  background-image: url('https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=1600&auto=format&fit=crop&q=80');
+  background-size: cover;
+  background-position: center right;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.tech-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg, 
+    #050505 0%, 
+    rgba(10, 10, 10, 0.95) 45%, 
+    rgba(10, 10, 10, 0.6) 75%, 
+    rgba(10, 10, 10, 0.2) 100%
+  );
+  z-index: 1;
+}
+
+.tech-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tech-hero-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #CCCCCC;
+  letter-spacing: 1.2px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.tech-hero-badge .badge-highlight {
+  color: var(--color-brand-orange, #F7600A);
+  font-weight: 800;
+}
+
+.tech-hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+  margin: 0 0 16px 0;
+}
+
+.tech-hero-subtitle {
+  font-size: 0.95rem;
+  color: #BBBBBB;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 500px;
+}
+
+/* Contenedor Principal */
+.tech-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+/* ── 2. TARJETA DE CONSULTA (OVERLAPPING EL HERO) ── */
+.tech-tracking-card-section {
+  margin-top: -70px;
+  position: relative;
+  z-index: 10;
+}
+
+.tracking-card {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 36px 40px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+  border: 1px solid #EAEAEA;
+  box-sizing: border-box;
+}
+
+.tracking-card-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  letter-spacing: -0.3px;
+  margin: 0 0 6px 0;
+}
+
+.tracking-card-subtitle {
+  font-size: 0.88rem;
+  color: #666666;
+  margin: 0 0 24px 0;
+}
+
+.tracking-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tracking-input-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.tracking-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 0.92rem;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  color: var(--color-black, #111111);
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 150ms ease;
+  box-sizing: border-box;
+}
+
+.tracking-input::placeholder {
+  color: #9CA3AF;
+}
+
+.tracking-input:focus {
+  border-color: var(--color-black, #111111);
+}
+
+.tracking-btn-submit {
+  padding: 12px 32px;
+  background-color: var(--color-brand-orange, #F7600A);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-family-base);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms ease, transform 120ms ease;
+}
+
+.tracking-btn-submit:hover {
+  background-color: #E05304;
+}
+
+.tracking-demo-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #777777;
+  flex-wrap: wrap;
+}
+
+.demo-pill {
+  background-color: #F3F4F6;
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-family-base);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #E5E7EB;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.demo-pill:hover {
+  background-color: #E5E7EB;
+  color: var(--color-black, #111111);
+}
+
+/* Modal de resultado de la orden */
+.repair-result-modal {
+  margin-top: 24px;
+  background-color: #FAFAFA;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 250ms ease-out;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #EAEAEA;
+}
+
+.result-code-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #888888;
+  letter-spacing: 0.5px;
+}
+
+.result-code {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  margin: 2px 0 0 0;
+}
+
+.result-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.result-status-badge.status-success {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.result-status-badge.status-warning {
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.result-label {
+  font-size: 0.75rem;
+  color: #777777;
+  display: block;
+}
+
+.result-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-black, #111111);
+}
+
+.result-value.orange {
+  color: var(--color-brand-orange, #F7600A);
+}
+
+.result-details {
+  background-color: #FFFFFF;
+  border: 1px solid #EAEAEA;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.result-details p {
+  font-size: 0.85rem;
+  color: #444444;
+  margin: 2px 0 0 0;
+  line-height: 1.45;
+}
+
+/* ── 3. SECCIÓN NUESTROS SERVICIOS ── */
+.tech-services-section {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.services-header {
+  text-align: center;
+}
+
+.services-header h2 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  letter-spacing: -0.8px;
+  margin: 0 0 8px 0;
+}
+
+.services-header p {
+  font-size: 0.92rem;
+  color: #666666;
+  margin: 0;
+}
+
+.services-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.service-item {
+  padding: 12px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 1px solid #E5E7EB;
+  box-sizing: border-box;
+}
+
+.service-item:last-child {
+  border-right: none;
+}
+
+.service-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black, #111111);
+  margin-bottom: 4px;
+}
+
+.service-icon-box.orange-accent {
+  color: var(--color-black, #111111);
+}
+
+.service-item h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.service-item p {
+  font-size: 0.85rem;
+  color: #555555;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ── 4. FORMULARIO Y CONTACTO (2 COLUMNAS) ── */
+.tech-form-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.form-col-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  letter-spacing: -0.5px;
+  margin: 0 0 6px 0;
+}
+
+.form-col-subtitle {
+  font-size: 0.88rem;
+  color: #666666;
+  margin: 0 0 28px 0;
+}
+
+.budget-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #444444;
+}
+
+.form-group .req {
+  color: var(--color-brand-orange, #F7600A);
+  margin-left: 2px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  color: var(--color-black, #111111);
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 150ms ease;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9CA3AF;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-black, #111111);
+}
+
+.btn-whatsapp-submit {
+  width: 100%;
+  padding: 13px 20px;
+  margin-top: 8px;
+  background-color: var(--color-brand-orange, #F7600A);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-family-base);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 160ms ease, transform 120ms ease;
+}
+
+.btn-whatsapp-submit:hover:not(:disabled) {
+  background-color: #E05304;
+}
+
+.btn-whatsapp-submit.sent {
+  background-color: #25D366;
+  cursor: default;
+}
+
+/* Columna Derecha: Foto del local + Información */
+.tech-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.store-photo-wrap {
+  width: 100%;
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #EAEAEA;
+}
+
+.store-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.store-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.store-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.store-icon {
+  color: var(--color-black, #111111);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.store-info-item strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-black, #111111);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.store-info-item p {
+  font-size: 0.85rem;
+  color: #555555;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.store-info-item a {
+  color: #555555;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.store-info-item a:hover {
+  color: var(--color-brand-orange, #F7600A);
+}
+
+/* ── 5. BARRA DE GARANTÍA Y CONFIANZA ── */
+.tech-trust-bar {
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 28px 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.trust-bar-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 0 24px;
+  border-right: 1px solid #E5E7EB;
+  box-sizing: border-box;
+}
+
+.trust-bar-item:first-child {
+  padding-left: 0;
+}
+
+.trust-bar-item:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.trust-bar-icon {
+  color: var(--color-black, #111111);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.trust-bar-item h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-black, #111111);
+  margin: 0 0 3px 0;
+  letter-spacing: -0.2px;
+}
+
+.trust-bar-item p {
+  font-size: 0.82rem;
+  color: #666666;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================= */
+
+@media (max-width: 960px) {
+  .services-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .service-item {
+    border-right: none;
+    padding: 0;
+  }
+
+  .tech-form-contact-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .tech-trust-bar {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .trust-bar-item {
+    border-right: none;
+    padding: 0;
+  }
+
+  .result-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tech-hero {
+    min-height: 360px;
+  }
+
+  .tech-hero-title {
+    font-size: 2rem;
+  }
+
+  .tracking-card {
+    padding: 24px 20px;
+  }
+
+  .tracking-input-row {
+    flex-direction: column;
+  }
+
+  .tracking-btn-submit {
+    width: 100%;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tech-container {
+    gap: 48px;
+  }
+}

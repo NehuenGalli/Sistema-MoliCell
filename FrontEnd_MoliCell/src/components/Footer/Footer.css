@@ -1,0 +1,309 @@
+/* =========================================================
+   FOOTER SITE — ESTILO AURATECH / MOLI-CELL CON WATERMARK
+   ========================================================= */
+
+.footer-site {
+  width: 100%;
+  background-color: #0c0c0c;
+  color: #FFFFFF;
+  font-family: var(--font-family-base);
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid #1a1a1a;
+}
+
+/* ─── EFECTO WATERMARK GIGANTE DE FONDO ─── */
+.footer-watermark-wrap {
+  width: 100%;
+  overflow: hidden;
+  text-align: center;
+  padding: 40px 20px 0 20px;
+  user-select: none;
+  pointer-events: none;
+  position: relative;
+}
+
+.footer-watermark-text {
+  font-size: clamp(3.5rem, 11vw, 8.5rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 0.9;
+  display: block;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.8));
+}
+
+/* ─── CONTENIDO PRINCIPAL DEL FOOTER ─── */
+.footer-main-content {
+  padding: 24px 0 48px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 36px;
+  box-sizing: border-box;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Columna Marca */
+.footer-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.footer-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-brand-orange, #F7600A);
+}
+
+.footer-brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+.footer-brand-desc {
+  font-size: 0.84rem;
+  color: #8E8E93;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 300px;
+}
+
+/* Botones Redes Sociales */
+.footer-social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.social-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #1c1c1e;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast, 160ms ease-out);
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  background-color: var(--color-brand-orange, #F7600A);
+  color: #FFFFFF;
+  border-color: var(--color-brand-orange, #F7600A);
+}
+
+.social-btn.whatsapp:hover {
+  background-color: #25D366;
+  border-color: #25D366;
+}
+
+.social-btn.instagram:hover {
+  background-color: #E1306C;
+  border-color: #E1306C;
+}
+
+.social-btn.facebook:hover {
+  background-color: #1877F2;
+  border-color: #1877F2;
+}
+
+.social-btn.tiktok:hover {
+  background-color: #000000;
+  border-color: #FE2C55;
+  color: #FE2C55;
+}
+
+/* Títulos de Columna */
+.footer-col-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.4px;
+}
+
+/* Listas de Enlaces */
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links-list a {
+  font-size: 0.84rem;
+  color: #8E8E93;
+  text-decoration: none;
+  transition: color var(--transition-fast, 160ms ease-out), transform var(--transition-fast, 160ms ease-out);
+  display: inline-block;
+}
+
+.footer-links-list a:hover {
+  color: #FFFFFF;
+  transform: translateX(3px);
+}
+
+/* ─── BARRA INFERIOR DE COPYRIGHT Y PAGOS ─── */
+.footer-bottom-bar {
+  background-color: #070707;
+  border-top: 1px solid #181818;
+  padding: 16px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-bottom-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.copyright-text {
+  font-size: 0.8rem;
+  color: #777777;
+  margin: 0;
+}
+
+/* Badges de Medios de Pago */
+.payment-badges-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pay-badge {
+  background-color: #FFFFFF;
+  color: #111111;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.visa-badge {
+  color: #1A1F71;
+  font-style: italic;
+  font-weight: 900;
+}
+
+.master-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  background-color: #111111;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.circle-red {
+  background-color: #EB001B;
+  margin-right: -4px;
+  z-index: 1;
+}
+
+.circle-yellow {
+  background-color: #F79E1B;
+  opacity: 0.9;
+}
+
+.mp-badge {
+  background-color: #009EE3;
+  color: #FFFFFF;
+  font-size: 0.68rem;
+}
+
+.apple-badge {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.cash-badge {
+  background-color: #2E7D32;
+  color: #FFFFFF;
+  font-size: 0.68rem;
+}
+
+/* ─── RESPONSIVE BREAKPOINTS ─── */
+@media (max-width: 1024px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .footer-col-brand {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-watermark-wrap {
+    padding: 24px 10px 0 10px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-col-brand {
+    grid-column: span 1;
+  }
+
+  .footer-bottom-container {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .payment-badges-list {
+    justify-content: center;
+  }
+}
