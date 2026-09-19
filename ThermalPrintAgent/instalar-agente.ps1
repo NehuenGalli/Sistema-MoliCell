@@ -8,9 +8,10 @@ $agentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $configPath = Join-Path $agentDirectory 'agent.config.json'
 $examplePath = Join-Path $agentDirectory 'agent.config.example.json'
 $launcherPath = Join-Path $agentDirectory 'iniciar-agente.cmd'
+$executablePath = Join-Path $agentDirectory 'MoliCellThermalPrintAgent.exe'
 
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-  throw 'Node.js LTS no está instalado. Instalalo y ejecutá nuevamente este instalador.'
+if (-not (Test-Path $executablePath) -and -not (Get-Command node -ErrorAction SilentlyContinue)) {
+  throw 'No se encontró MoliCellThermalPrintAgent.exe ni Node.js LTS. Copiá el agente completo o instalá Node.js.'
 }
 
 $config = if (Test-Path $configPath) {
@@ -24,7 +25,7 @@ if ($PrinterName) { $config.printerName = $PrinterName }
 $config | ConvertTo-Json -Depth 3 | Set-Content $configPath -Encoding utf8
 
 $taskName = 'MoliCell Thermal Print Agent'
-$taskAction = "cmd.exe /c `"`"$launcherPath`"`""
+$taskAction = if (Test-Path $executablePath) { "`"$executablePath`"" } else { "cmd.exe /c `"`"$launcherPath`"`"" }
 schtasks.exe /Create /TN $taskName /TR $taskAction /SC ONLOGON /F | Out-Null
 schtasks.exe /Run /TN $taskName | Out-Null
 
