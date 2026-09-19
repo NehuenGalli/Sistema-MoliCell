@@ -30,7 +30,7 @@ Esta opción usa el ejecutable `MoliCellThermalPrintAgent.exe`, por lo que la PC
 
 ## Uso diario
 
-El agente se inicia automáticamente al iniciar sesión en Windows. La persona de caja sólo tiene que encender/conectar la POS-58, abrir MoliCell y pulsar **Imprimir**.
+El instalador deja un acceso directo del agente en la carpeta Inicio del usuario de Windows y lo inicia en el momento. La persona de caja sólo tiene que encender/conectar la POS-58, abrir MoliCell y pulsar **Imprimir**.
 
 Si Windows cambió el nombre de la impresora o se instala una segunda térmica, editá `agent.config.json`, ajustá `printerName` y ejecutá nuevamente el comando de instalación.
 

@@ -24,9 +24,28 @@ $config.allowedOrigins = @($Origin)
 if ($PrinterName) { $config.printerName = $PrinterName }
 $config | ConvertTo-Json -Depth 3 | Set-Content $configPath -Encoding utf8
 
-$taskName = 'MoliCell Thermal Print Agent'
-$taskAction = if (Test-Path $executablePath) { "`"$executablePath`"" } else { "cmd.exe /c `"`"$launcherPath`"`"" }
-schtasks.exe /Create /TN $taskName /TR $taskAction /SC ONLOGON /F | Out-Null
-schtasks.exe /Run /TN $taskName | Out-Null
+$startupDirectory = [Environment]::GetFolderPath('Startup')
+$shortcutPath = Join-Path $startupDirectory 'MoliCell Thermal Print Agent.lnk'
+$shell = New-Object -ComObject WScript.Shell
+$shortcut = $shell.CreateShortcut($shortcutPath)
 
-Write-Host "Agente instalado. Se iniciará automáticamente al ingresar a Windows y aceptará impresiones desde $Origin."
+if (Test-Path $executablePath) {
+  $shortcut.TargetPath = $executablePath
+  $shortcut.Arguments = ''
+} else {
+  $shortcut.TargetPath = (Get-Command node).Source
+  $shortcut.Arguments = "`"$agentDirectory\agent.js`""
+}
+
+$shortcut.WorkingDirectory = $agentDirectory
+$shortcut.WindowStyle = 7 # Minimizada
+$shortcut.Save()
+
+# Iniciarlo ahora también permite probar sin cerrar sesión ni reiniciar Windows.
+if (Test-Path $executablePath) {
+  Start-Process -FilePath $executablePath -WorkingDirectory $agentDirectory -WindowStyle Hidden
+} else {
+  Start-Process -FilePath (Get-Command node).Source -ArgumentList 'agent.js' -WorkingDirectory $agentDirectory -WindowStyle Hidden
+}
+
+Write-Host "Agente instalado e iniciado. Se abrirá automáticamente al ingresar a Windows y aceptará impresiones desde $Origin."
