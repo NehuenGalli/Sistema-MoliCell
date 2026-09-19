@@ -3,10 +3,14 @@ const pool = require('./db');
 require('dotenv').config();
 
 const seedAdmin = async () => {
-    const email = process.env.ADMIN_EMAIL || 'admin@molicell.com';
-    const password = process.env.ADMIN_PASSWORD || 'admin123';
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
 
     try {
+        if (!email || !password) {
+            throw new Error('ADMIN_EMAIL y ADMIN_PASSWORD son obligatorios para crear o actualizar el administrador.');
+        }
+
         const hash = await bcrypt.hash(password, 12);
 
         // Verificar si el admin ya existe

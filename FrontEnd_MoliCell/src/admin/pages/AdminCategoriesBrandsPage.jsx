@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, Tags, ShieldAlert, X } from 'lucide-react';
 import { 
   fetchAdminCategorias, 
@@ -23,10 +23,6 @@ export default function AdminCategoriesBrandsPage() {
   const [toastMsg, setToastMsg] = useState({ text: '', type: 'success' });
   const [errorLoad, setErrorLoad] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async () => {
     setErrorLoad('');
     try {
@@ -40,6 +36,11 @@ export default function AdminCategoriesBrandsPage() {
       setErrorLoad(err.message || 'Error al cargar categorías y marcas desde la base de datos');
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });

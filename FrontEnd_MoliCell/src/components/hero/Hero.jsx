@@ -1,4 +1,3 @@
-import React from 'react';
 import { Percent, Truck } from 'lucide-react';
 import heroBannerImg from '../../assets/aaaa.png';
 import './Hero.css';

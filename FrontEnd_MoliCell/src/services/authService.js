@@ -45,7 +45,7 @@ export const authService = {
     try {
       const user = localStorage.getItem(USER_KEY);
       return user ? JSON.parse(user) : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   },

@@ -11,13 +11,19 @@ cloudinary.config({
 
 // 2. Almacenamiento temporal en memoria
 const storage = multer.memoryStorage();
+const ALLOWED_IMAGE_MIME_TYPES = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif'
+]);
 
 // Middleware Multer con límite de 5 MB y validación de tipo MIME
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
-        if (!file.mimetype.startsWith('image/')) {
+        if (!ALLOWED_IMAGE_MIME_TYPES.has(file.mimetype)) {
             return cb(new Error('Solo se permiten archivos de imagen (jpg, png, webp, gif)'), false);
         }
         cb(null, true);

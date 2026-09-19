@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import './BrandsBar.css';
 import marcaTestImg from '../../assets/marca-test.webp';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -13,11 +13,9 @@ import {
   RotateCcw,
   Smartphone,
   User,
-  Phone,
   DollarSign,
   Calendar,
   Wrench,
-  AlertCircle,
   MessageSquare,
   Printer
 } from 'lucide-react';
@@ -27,6 +25,7 @@ import {
   updateAdminReparacion, 
   deleteAdminReparacion 
 } from '../services/adminApi';
+import { printThermalTicket } from '../utils/printThermalTicket';
 import './AdminRepairsPage.css';
 
 export default function AdminRepairsPage() {
@@ -56,7 +55,7 @@ export default function AdminRepairsPage() {
   const [formErrors, setFormErrors] = useState({});
 
   const handleTriggerPrint = () => {
-    window.print();
+    printThermalTicket('ticket-reparacion-impresion');
   };
 
   const [form, setForm] = useState({
@@ -68,10 +67,6 @@ export default function AdminRepairsPage() {
     estado: 'En Proceso',
     costoEstimado: ''
   });
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -89,6 +84,11 @@ export default function AdminRepairsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
@@ -801,25 +801,26 @@ export default function AdminRepairsPage() {
         </div>
       )}
 
-      {/* ── MODAL IMPRESIÓN DE TICKET DE SERVICIO TÉCNICO ── */}
+      {/* ── MODAL IMPRESIÓN DE TICKET DE SERVICIO TÉCNICO (58MM) ── */}
       {selectedRepairForTicket && (
         <div className="admin-modal-overlay ticket-repair-modal-overlay" onClick={() => setSelectedRepairForTicket(null)}>
-          <div className="admin-modal-card ticket-repair-modal-card" style={{ maxWidth: '420px', width: '92%', borderRadius: '16px', padding: '20px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-card ticket-repair-modal-card" style={{ maxWidth: '360px', width: '92%', borderRadius: '16px', padding: '16px' }} onClick={(e) => e.stopPropagation()}>
             
-            <div className="modal-header no-print" style={{ marginBottom: '14px', borderBottom: '1px solid #F1F5F9', paddingBottom: '10px' }}>
+            <div className="modal-header no-print" style={{ marginBottom: '12px', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Printer size={18} style={{ color: '#0F172A' }} />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Ticket de Servicio Técnico</h3>
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>Ticket de Servicio Técnico</h3>
               </div>
               <button type="button" onClick={() => setSelectedRepairForTicket(null)} className="close-modal-btn">
                 <X size={18} />
               </button>
             </div>
 
-            {/* Plantilla Formato Térmico POS 80mm */}
+            {/* Plantilla Formato Térmico POS 58mm (Gadnic IT1050) */}
             <div className="ticket-repair-printable" id="ticket-reparacion-impresion">
               <div className="ticket-repair-header">
-                <h4>Moli Cell</h4>
+                <h4>MOLI CELL</h4>
+                <div className="ticket-repair-subtitle">Servicio Técnico Especializado</div>
               </div>
 
               <div className="ticket-repair-divider"></div>
@@ -830,35 +831,47 @@ export default function AdminRepairsPage() {
                   <strong>{selectedRepairForTicket.codigo_seguimiento || selectedRepairForTicket.codigo || `MC-${1000 + selectedRepairForTicket.id}`}</strong>
                 </div>
                 <div className="meta-row">
-                  <span>Fecha Ingreso:</span>
+                  <span>Fecha:</span>
                   <span>
                     {selectedRepairForTicket.creado_en 
                       ? new Date(selectedRepairForTicket.creado_en).toLocaleDateString('es-AR') 
                       : (selectedRepairForTicket.fecha_ingreso ? new Date(selectedRepairForTicket.fecha_ingreso).toLocaleDateString('es-AR') : '—')}
                   </span>
                 </div>
+                {selectedRepairForTicket.cliente && (
+                  <div className="meta-row">
+                    <span>Cliente:</span>
+                    <strong>{selectedRepairForTicket.cliente}</strong>
+                  </div>
+                )}
+                {selectedRepairForTicket.telefono && (
+                  <div className="meta-row">
+                    <span>Teléfono:</span>
+                    <span>{selectedRepairForTicket.telefono}</span>
+                  </div>
+                )}
               </div>
 
               <div className="ticket-repair-divider"></div>
 
               <div className="ticket-repair-box">
-                <div className="box-title">Equipo/Dispositivo</div>
-                <div className="box-value">{selectedRepairForTicket.dispositivo}</div>
+                <div className="box-title">Equipo / Dispositivo:</div>
+                <div className="box-value">{selectedRepairForTicket.dispositivo || '—'}</div>
               </div>
 
               <div className="ticket-repair-box">
-                <div className="box-title">Servicio Realizado</div>
-                <div className="box-value" style={{ fontWeight: 700, fontSize: '0.84rem' }}>
+                <div className="box-title">Servicio / Falla:</div>
+                <div className="box-value">
                   {selectedRepairForTicket.falla_descripcion || selectedRepairForTicket.falla || selectedRepairForTicket.servicio || selectedRepairForTicket.trabajo_realizado || 'Revisión técnica'}
                 </div>
               </div>
 
               <div className="ticket-repair-divider"></div>
 
-              <div className="ticket-repair-meta" style={{ fontSize: '0.92rem' }}>
+              <div className="ticket-repair-meta" style={{ fontSize: '0.86rem' }}>
                 <div className="meta-row">
-                  <span style={{ fontWeight: 800 }}>Total:</span>
-                  <strong style={{ fontSize: '1.05rem', color: '#0F172A' }}>
+                  <span style={{ fontWeight: 800 }}>Total Estimado:</span>
+                  <strong style={{ fontSize: '0.98rem', color: '#0F172A' }}>
                     {(() => {
                       const rawTotal = selectedRepairForTicket.costo_estimado ?? selectedRepairForTicket.costoEstimado ?? selectedRepairForTicket.presupuesto_estimado ?? selectedRepairForTicket.precio ?? selectedRepairForTicket.monto;
                       if (rawTotal !== undefined && rawTotal !== null && rawTotal !== '' && !isNaN(Number(rawTotal))) {
@@ -873,12 +886,16 @@ export default function AdminRepairsPage() {
               <div className="ticket-repair-divider"></div>
 
               <div className="ticket-repair-footer">
-                <p style={{ margin: '8px 0 0 0', fontWeight: 700, fontSize: '0.82rem' }}>¡Gracias por confiar en Moli-Cell!</p>
+                <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.74rem' }}>¡Gracias por confiar en Moli Cell!</p>
               </div>
             </div>
 
-            <div className="modal-footer no-print" style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', gap: '12px', width: '100%' }}>
-              <button type="button" onClick={() => setSelectedRepairForTicket(null)} className="btn-cancel" style={{ flex: '1', maxWidth: '130px' }}>
+            <div className="ticket-printer-hint no-print">
+              <span>Formato 58mm · Compatible Gadnic IT1050</span>
+            </div>
+
+            <div className="modal-footer no-print" style={{ marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '10px', width: '100%' }}>
+              <button type="button" onClick={() => setSelectedRepairForTicket(null)} className="btn-cancel" style={{ flex: '1', maxWidth: '120px' }}>
                 Cerrar
               </button>
 
@@ -886,7 +903,7 @@ export default function AdminRepairsPage() {
                 type="button"
                 onClick={handleTriggerPrint}
                 className="btn-save"
-                style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '180px' }}
+                style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '160px' }}
               >
                 <Printer size={17} />
                 <span>Imprimir</span>

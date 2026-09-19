@@ -1,6 +1,5 @@
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAdminAuth } from '../context/AdminAuthContext';
+import { useAdminAuth } from '../context/useAdminAuth';
 
 export default function AdminProtectedRoute({ children }) {
   const { isAuthenticated } = useAdminAuth();

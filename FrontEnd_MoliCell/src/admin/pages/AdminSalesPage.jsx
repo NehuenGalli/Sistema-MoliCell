@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -8,22 +8,20 @@ import {
   DollarSign, 
   ShoppingBag, 
   Trash2,
-  Filter,
   Check,
   AlertCircle,
   RefreshCw,
   SlidersHorizontal,
-  ChevronDown,
   RotateCcw,
   Eye
 } from 'lucide-react';
-import { fetchAdminVentas, createAdminVenta, fetchAdminProductos } from '../services/adminApi';
+import { fetchAdminVentas, createAdminVenta } from '../services/adminApi';
 import { productoService } from '../../services/productoService';
+import { printThermalTicket } from '../utils/printThermalTicket';
 import './AdminSalesPage.css';
 
 export default function AdminSalesPage() {
   const [ventas, setVentas] = useState([]);
-  const [productos, setProductos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [errorLoad, setErrorLoad] = useState('');
@@ -84,18 +82,11 @@ export default function AdminSalesPage() {
       : 0;
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async (params = {}) => {
     setLoading(true);
     setErrorLoad('');
     try {
-      const [salesRes, prodsData] = await Promise.all([
-        fetchAdminVentas(params),
-        fetchAdminProductos()
-      ]);
+      const salesRes = await fetchAdminVentas(params);
 
       // Extraer datos y metadatos de paginación del servidor
       if (salesRes && salesRes.pagination) {
@@ -107,13 +98,17 @@ export default function AdminSalesPage() {
         setVentas(salesRes);
       }
 
-      setProductos(prodsData);
     } catch (err) {
       setErrorLoad(err.message || 'Error al obtener el historial de ventas del servidor.');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
@@ -176,6 +171,9 @@ export default function AdminSalesPage() {
       handleApplyServerFilters(filterParams, searchTerm, 1);
     }, 350);
     return () => clearTimeout(timer);
+    // Los demás filtros se envían desde sus controles; incluirlos aquí haría
+    // una segunda petición cada vez que el usuario confirma un filtro.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
   // Calcular número de filtros activos
@@ -325,9 +323,9 @@ export default function AdminSalesPage() {
     }
   };
 
-  // Imprimir Ticket mediante el explorador
+  // Imprimir Ticket térmico dinámico (tipo Treinta / POS)
   const handleTriggerPrint = () => {
-    window.print();
+    printThermalTicket('ticket-impresion');
   };
 
   // Petición directa al servidor PostgreSQL (100% Server-Side SQL Filtering)
@@ -1026,25 +1024,26 @@ export default function AdminSalesPage() {
         </div>
       )}
 
-      {/* ── MODAL IMPRESIÓN DE TICKET ── */}
+      {/* ── MODAL IMPRESIÓN DE TICKET (58MM) ── */}
       {selectedSaleForTicket && (
         <div className="admin-modal-overlay ticket-pos-modal-overlay" onClick={() => setSelectedSaleForTicket(null)}>
-          <div className="admin-modal-card ticket-pos-modal-card" style={{ maxWidth: '400px', width: '92%', borderRadius: '16px', padding: '20px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-card ticket-pos-modal-card" style={{ maxWidth: '360px', width: '92%', borderRadius: '16px', padding: '16px' }} onClick={(e) => e.stopPropagation()}>
             
-            <div className="modal-header no-print" style={{ marginBottom: '14px', borderBottom: '1px solid #F1F5F9', paddingBottom: '10px' }}>
+            <div className="modal-header no-print" style={{ marginBottom: '12px', borderBottom: '1px solid #F1F5F9', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Printer size={18} style={{ color: '#0F172A' }} />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Ticket de Comprobante</h3>
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>Ticket de Comprobante</h3>
               </div>
               <button type="button" onClick={() => setSelectedSaleForTicket(null)} className="close-modal-btn">
                 <X size={18} />
               </button>
             </div>
 
-            {/* Plantilla Formato Térmico Comprobante 80mm */}
+            {/* Plantilla Formato Térmico Comprobante 58mm (Gadnic IT1050) */}
             <div className="ticket-pos-printable" id="ticket-impresion">
               <div className="ticket-header">
-                <h4>Moli Cell</h4>
+                <h4>MOLI CELL</h4>
+                <div className="ticket-subtitle">Comprobante de Venta</div>
               </div>
 
               <div className="ticket-divider"></div>
@@ -1060,7 +1059,7 @@ export default function AdminSalesPage() {
                 </div>
                 <div className="meta-row">
                   <span>Medio de pago:</span>
-                  <strong>{selectedSaleForTicket.metodo_pago}</strong>
+                  <strong>{selectedSaleForTicket.metodo_pago || 'Efectivo'}</strong>
                 </div>
               </div>
 
@@ -1070,8 +1069,8 @@ export default function AdminSalesPage() {
                 <thead>
                   <tr>
                     <th style={{ width: '15%' }}>Cant</th>
-                    <th>Producto</th>
-                    <th style={{ textAlign: 'right', width: '35%' }}>Subtotal</th>
+                    <th style={{ width: '52%' }}>Producto</th>
+                    <th style={{ textAlign: 'right', width: '33%' }}>Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1079,15 +1078,15 @@ export default function AdminSalesPage() {
                     selectedSaleForTicket.productos.map((p, i) => (
                       <tr key={i}>
                         <td style={{ fontWeight: 700 }}>{p.cantidad}x</td>
-                        <td>{p.name || `Producto #${p.producto_id}`}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>
+                        <td style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{p.name || `Producto #${p.producto_id}`}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700, whiteSpace: 'nowrap' }}>
                           ${(Number(p.precio || 0) * Number(p.cantidad || 1)).toLocaleString('es-AR')}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" style={{ textAlign: 'center', color: '#64748B' }}>Venta registrada en sistema</td>
+                      <td colSpan="3" style={{ textAlign: 'center', color: '#64748B', padding: '6px 0' }}>Venta registrada en sistema</td>
                     </tr>
                   )}
                 </tbody>
@@ -1096,17 +1095,21 @@ export default function AdminSalesPage() {
               <div className="ticket-divider"></div>
 
               <div className="ticket-total-box">
-                <span>Total:</span>
+                <span>TOTAL:</span>
                 <strong>${Number(selectedSaleForTicket.monto).toLocaleString('es-AR')}</strong>
               </div>
 
               <div className="ticket-footer">
-                <p style={{ fontWeight: 700, margin: '6px 0 0 0' }}>¡MUCHAS GRACIAS POR SU COMPRA!</p>
+                <p style={{ fontWeight: 700, margin: '4px 0 0 0' }}>¡MUCHAS GRACIAS POR SU COMPRA!</p>
               </div>
             </div>
 
-            <div className="modal-footer no-print" style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', gap: '12px', width: '100%' }}>
-              <button type="button" onClick={() => setSelectedSaleForTicket(null)} className="btn-cancel" style={{ flex: '1', maxWidth: '130px' }}>
+            <div className="ticket-printer-hint no-print">
+              <span>Formato 58mm · Compatible Gadnic IT1050</span>
+            </div>
+
+            <div className="modal-footer no-print" style={{ marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '10px', width: '100%' }}>
+              <button type="button" onClick={() => setSelectedSaleForTicket(null)} className="btn-cancel" style={{ flex: '1', maxWidth: '120px' }}>
                 Cerrar
               </button>
 
@@ -1114,7 +1117,7 @@ export default function AdminSalesPage() {
                 type="button"
                 onClick={handleTriggerPrint}
                 className="btn-save"
-                style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '170px' }}
+                style={{ background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: '1', maxWidth: '160px' }}
               >
                 <Printer size={17} />
                 <span>Imprimir</span>

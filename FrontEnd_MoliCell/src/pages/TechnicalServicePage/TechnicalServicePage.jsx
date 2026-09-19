@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Smartphone, 
   Wrench, 
   ClipboardCheck, 
   Clock, 
   MapPin, 
-  Phone, 
   MessageCircle, 
   CheckCircle2,
-  AlertCircle,
-  Search,
-  Send
 } from 'lucide-react';
 import { tecnicoService } from '../../services';
 import './TechnicalServicePage.css';

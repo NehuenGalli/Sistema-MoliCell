@@ -1,7 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useState } from 'react';
 import { loginAdmin } from '../services/adminApi';
-
-const AdminAuthContext = createContext(null);
+import AdminAuthContext from './AdminAuthContextStore';
 
 export const AdminAuthProvider = ({ children }) => {
   const [adminUser, setAdminUser] = useState(() => {
@@ -10,7 +9,9 @@ export const AdminAuthProvider = ({ children }) => {
     if (token && userStr) {
       try {
         return JSON.parse(userStr);
-      } catch (e) {}
+      } catch {
+        localStorage.removeItem('molicell_admin_user');
+      }
     }
     return null;
   });
@@ -32,7 +33,7 @@ export const AdminAuthProvider = ({ children }) => {
       }
 
       return { success: false, error: res.error || 'Credenciales no válidas' };
-    } catch (err) {
+    } catch {
       return { success: false, error: 'Error de conexión. Verificá tu red e intentá de nuevo.' };
     } finally {
       setLoading(false);
@@ -50,12 +51,4 @@ export const AdminAuthProvider = ({ children }) => {
       {children}
     </AdminAuthContext.Provider>
   );
-};
-
-export const useAdminAuth = () => {
-  const context = useContext(AdminAuthContext);
-  if (!context) {
-    throw new Error('useAdminAuth debe ser usado dentro de un AdminAuthProvider');
-  }
-  return context;
 };
