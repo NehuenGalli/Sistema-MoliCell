@@ -39,9 +39,9 @@ function ticketToPlainText(ticket) {
     .trim();
 }
 
-async function callAgent(path, options = {}) {
+async function callAgent(path, options = {}, timeoutMs = 2500) {
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 2500);
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${AGENT_URL}${path}`, {
       ...options,
@@ -81,7 +81,7 @@ export const printThermalTicket = async (elementId) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
-    });
+    }, 15000);
     return true;
   } catch (error) {
     const isUnavailable = error.name === 'AbortError' || error instanceof TypeError;
