@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import logoImg from '../../assets/downloadgram.org_658663834_18073324010265668_3678219278523067320_n.jpg';

@@ -27,10 +27,23 @@ const activePrints = new Set();
 const recentPrints = new Map();
 
 function loadConfig() {
-  if (!existsSync(CONFIG_PATH)) return DEFAULT_CONFIG;
+  if (!existsSync(CONFIG_PATH)) return { ...DEFAULT_CONFIG };
 
   try {
-    return { ...DEFAULT_CONFIG, ...JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) };
+    const parsed = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+    const allowedOrigins = Array.isArray(parsed.allowedOrigins)
+      ? parsed.allowedOrigins.filter((origin) => typeof origin === 'string' && origin.trim())
+      : DEFAULT_CONFIG.allowedOrigins;
+
+    return {
+      ...DEFAULT_CONFIG,
+      ...parsed,
+      port: Number.isInteger(Number(parsed.port)) && Number(parsed.port) > 0 && Number(parsed.port) < 65536
+        ? Number(parsed.port)
+        : DEFAULT_CONFIG.port,
+      printerName: typeof parsed.printerName === 'string' ? parsed.printerName.trim() : '',
+      allowedOrigins,
+    };
   } catch (error) {
     console.warn(`No se pudo leer agent.config.json: ${error.message}. Se usarán los valores predeterminados.`);
     return DEFAULT_CONFIG;

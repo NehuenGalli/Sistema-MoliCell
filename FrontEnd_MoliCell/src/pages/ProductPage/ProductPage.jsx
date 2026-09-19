@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   ShoppingBag, 
@@ -37,10 +37,10 @@ export default function ProductPage({ productos = [], onAddToCart }) {
   // Scroll arriba y cargar producto desde el backend por ID
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCantidad(1);
-    setAdded(false);
 
     const loadProduct = async () => {
+      setCantidad(1);
+      setAdded(false);
       setLoading(true);
       // Buscar primero en el array de props
       const foundInProps = productos.find(p => String(p.id || p.id_producto) === String(id));

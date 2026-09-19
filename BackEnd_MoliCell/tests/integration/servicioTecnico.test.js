@@ -40,8 +40,12 @@ describe('CRUD /tecnico — Servicio Técnico', () => {
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res.status).toBe(200);
-            expect(Array.isArray(res.body)).toBe(true);
-            expect(res.body.length).toBeGreaterThanOrEqual(1);
+            expect(Array.isArray(res.body.servicios)).toBe(true);
+            expect(res.body.servicios.length).toBeGreaterThanOrEqual(1);
+            expect(res.body.pagination).toEqual(expect.objectContaining({
+                totalItems: expect.any(Number),
+                currentPage: 1
+            }));
         });
 
         it('debería obtener servicio técnico por ID (admin) → 200 + incluye datos del cliente', async () => {

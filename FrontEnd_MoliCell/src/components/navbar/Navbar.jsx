@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import logoImg from '../../assets/downloadgram.org_658663834_18073324010265668_3678219278523067320_n.jpg';

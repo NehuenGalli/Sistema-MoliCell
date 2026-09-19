@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -24,10 +24,6 @@ export default function AdminDashboardPage() {
   const [ventasData, setVentasData] = useState({ ventas: [], totalGeneral: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(''); // #16 Fix: estado de error visible
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   // #9 Fix: limitar los datos que carga el dashboard para no traer todo sin necesidad
   const loadData = async () => {
@@ -66,6 +62,11 @@ export default function AdminDashboardPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const lowStockProducts = productos.filter(p =>
     (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 10) < 10

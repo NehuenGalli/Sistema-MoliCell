@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { 
   Plus, 
   Search, 
@@ -7,7 +7,6 @@ import {
   X, 
   Check, 
   Image as ImageIcon,
-  Tag,
   AlertCircle,
   Camera,
   Upload,
@@ -107,11 +106,7 @@ export default function AdminProductsPage() {
     return numStr ? parseFloat(numStr) : '';
   };
 
-  useEffect(() => {
-    loadInitialData();
-  }, [filterParams.status]);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     setLoading(true);
     setErrorLoad('');
     try {
@@ -129,7 +124,12 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterParams.status]);
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadInitialData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, [loadInitialData]);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
@@ -238,7 +238,7 @@ export default function AdminProductsPage() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-    } catch (err) {
+    } catch {
       showToast('No se pudo acceder a la cámara. Verificá los permisos del navegador.', 'error');
       setIsCameraActive(false);
     }
@@ -388,37 +388,6 @@ export default function AdminProductsPage() {
       loadInitialData();
     } catch (err) {
       showToast(err.message || 'Error al guardar el producto en el servidor', 'error');
-    }
-  };
-
-  // Alternar Destacado Rápido (Click directo en tabla)
-  const handleToggleDestacado = async (prodId, currentDestacado, prodName) => {
-    const newStatus = !currentDestacado;
-    // Actualización optimista inmediata en UI
-    setProductos(prev => prev.map(p => {
-      if ((p.id || p.id_producto) === prodId) {
-        return { ...p, destacado: newStatus };
-      }
-      return p;
-    }));
-
-    try {
-      await updateAdminProducto(prodId, { destacado: newStatus });
-      showToast(
-        newStatus 
-          ? `¡"${prodName}" marcado como Destacado ⭐!` 
-          : `"${prodName}" quitado de destacados.`,
-        'success'
-      );
-    } catch (err) {
-      // Revertir si hubo error
-      setProductos(prev => prev.map(p => {
-        if ((p.id || p.id_producto) === prodId) {
-          return { ...p, destacado: currentDestacado };
-        }
-        return p;
-      }));
-      showToast(err.message || 'Error al actualizar estado de destacado', 'error');
     }
   };
 

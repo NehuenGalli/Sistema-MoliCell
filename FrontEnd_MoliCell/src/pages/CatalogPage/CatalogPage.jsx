@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Search, 
@@ -17,8 +17,8 @@ import {
 import ProductCard from '../../components/ProductCard/ProductCard';
 import './CatalogPage.css';
 
-export default function CatalogPage({ productos = [], onAddToCart }) {
-  const allProducts = productos || [];
+export default function CatalogPage({ productos, onAddToCart }) {
+  const allProducts = useMemo(() => (Array.isArray(productos) ? productos : []), [productos]);
   const [searchParams] = useSearchParams();
 
   const urlCategory = searchParams.get('categoria') || searchParams.get('category');
@@ -34,29 +34,7 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1500000 });
   const [appliedMaxPrice, setAppliedMaxPrice] = useState(1500000);
   const [sortBy, setSortBy] = useState('featured');
-  const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-
-  useEffect(() => {
-    if (urlCategory) {
-      setSelectedCategories([urlCategory]);
-      setCurrentPage(1);
-    }
-    if (urlBrand) {
-      setSelectedBrands([urlBrand]);
-      setCurrentPage(1);
-    }
-    if (urlSearch) {
-      setSearchTerm(urlSearch);
-      setCurrentPage(1);
-    }
-    if (urlOffers) {
-      setOnlyOffers(true);
-      setOpenAccordions(prev => ({ ...prev, descuentos: true }));
-      setCurrentPage(1);
-    }
-  }, [urlCategory, urlBrand, urlSearch, urlOffers]);
-
   // Estado de Acordeones laterales (Categorías y Marcas ABIERTOS por defecto)
   const [openAccordions, setOpenAccordions] = useState({
     categorias: true,
@@ -64,6 +42,19 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
     precio: false,
     descuentos: urlOffers,
   });
+
+  useEffect(() => {
+    const syncTimer = window.setTimeout(() => {
+      if (urlCategory) setSelectedCategories([urlCategory]);
+      if (urlBrand) setSelectedBrands([urlBrand]);
+      if (urlSearch) setSearchTerm(urlSearch);
+      if (urlOffers) {
+        setOnlyOffers(true);
+        setOpenAccordions(prev => ({ ...prev, descuentos: true }));
+      }
+    }, 0);
+    return () => window.clearTimeout(syncTimer);
+  }, [urlCategory, urlBrand, urlSearch, urlOffers]);
 
   const toggleAccordion = (section) => {
     setOpenAccordions(prev => ({
@@ -118,7 +109,6 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
 
   // Manejar categorías (checkboxes múltiples)
   const handleCategoryToggle = (categoryName) => {
-    setCurrentPage(1);
     setSelectedCategories(prev => 
       prev.includes(categoryName) 
         ? prev.filter(c => c !== categoryName) 
@@ -128,7 +118,6 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
 
   // Manejar marcas (checkboxes múltiples)
   const handleBrandToggle = (brandName) => {
-    setCurrentPage(1);
     setSelectedBrands(prev => 
       prev.includes(brandName) 
         ? prev.filter(b => b !== brandName) 
@@ -145,7 +134,6 @@ export default function CatalogPage({ productos = [], onAddToCart }) {
     setPriceRange({ min: 0, max: 1500000 });
     setAppliedMaxPrice(1500000);
     setSortBy('featured');
-    setCurrentPage(1);
   };
 
   // Filtrado de productos

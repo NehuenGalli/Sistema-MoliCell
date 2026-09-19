@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Tag, ArrowRight } from 'lucide-react';
 import ProductCard from '../ProductCard/ProductCard';

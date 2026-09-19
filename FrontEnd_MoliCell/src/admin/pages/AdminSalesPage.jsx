@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -8,23 +8,20 @@ import {
   DollarSign, 
   ShoppingBag, 
   Trash2,
-  Filter,
   Check,
   AlertCircle,
   RefreshCw,
   SlidersHorizontal,
-  ChevronDown,
   RotateCcw,
   Eye
 } from 'lucide-react';
-import { fetchAdminVentas, createAdminVenta, fetchAdminProductos } from '../services/adminApi';
+import { fetchAdminVentas, createAdminVenta } from '../services/adminApi';
 import { productoService } from '../../services/productoService';
 import { printThermalTicket } from '../utils/printThermalTicket';
 import './AdminSalesPage.css';
 
 export default function AdminSalesPage() {
   const [ventas, setVentas] = useState([]);
-  const [productos, setProductos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [errorLoad, setErrorLoad] = useState('');
@@ -85,18 +82,11 @@ export default function AdminSalesPage() {
       : 0;
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async (params = {}) => {
     setLoading(true);
     setErrorLoad('');
     try {
-      const [salesRes, prodsData] = await Promise.all([
-        fetchAdminVentas(params),
-        fetchAdminProductos()
-      ]);
+      const salesRes = await fetchAdminVentas(params);
 
       // Extraer datos y metadatos de paginación del servidor
       if (salesRes && salesRes.pagination) {
@@ -108,13 +98,17 @@ export default function AdminSalesPage() {
         setVentas(salesRes);
       }
 
-      setProductos(prodsData);
     } catch (err) {
       setErrorLoad(err.message || 'Error al obtener el historial de ventas del servidor.');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
@@ -177,6 +171,9 @@ export default function AdminSalesPage() {
       handleApplyServerFilters(filterParams, searchTerm, 1);
     }, 350);
     return () => clearTimeout(timer);
+    // Los demás filtros se envían desde sus controles; incluirlos aquí haría
+    // una segunda petición cada vez que el usuario confirma un filtro.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
   // Calcular número de filtros activos

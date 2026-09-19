@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './ContactPage.css';
 import { Phone, Clock, MapPin } from 'lucide-react';
 
@@ -70,7 +70,7 @@ export default function ContactPage() {
             <ul className="cp-info-list">
               <li className="cp-info-item">
                 <Phone size={17} strokeWidth={2} className="cp-info-icon" />
-                <a href={`tel:${CONTACT_INFO.telefono.replace(/[\s\-\+]/g, '')}`} className="cp-info-link">
+                <a href={`tel:${CONTACT_INFO.telefono.replace(/[\s+-]/g, '')}`} className="cp-info-link">
                   {CONTACT_INFO.telefono}
                 </a>
               </li>

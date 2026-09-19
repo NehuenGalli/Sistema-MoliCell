@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -13,11 +13,9 @@ import {
   RotateCcw,
   Smartphone,
   User,
-  Phone,
   DollarSign,
   Calendar,
   Wrench,
-  AlertCircle,
   MessageSquare,
   Printer
 } from 'lucide-react';
@@ -70,10 +68,6 @@ export default function AdminRepairsPage() {
     costoEstimado: ''
   });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async () => {
     setLoading(true);
     setErrorLoad('');
@@ -90,6 +84,11 @@ export default function AdminRepairsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadTimer = window.setTimeout(loadData, 0);
+    return () => window.clearTimeout(loadTimer);
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });

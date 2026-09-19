@@ -42,7 +42,6 @@ $shortcut.WindowStyle = 7 # Minimizada
 $shortcut.Save()
 
 # Iniciarlo ahora también permite probar sin cerrar sesión ni reiniciar Windows.
-Get-Process -Name 'MoliCellThermalPrintAgent' -ErrorAction SilentlyContinue | Stop-Process -Force
 if (Test-Path $executablePath) {
   Start-Process -FilePath $executablePath -WorkingDirectory $agentDirectory -WindowStyle Hidden
 } else {

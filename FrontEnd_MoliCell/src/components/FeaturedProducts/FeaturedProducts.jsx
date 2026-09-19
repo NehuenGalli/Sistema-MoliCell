@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '../ProductCard/ProductCard';
 import { DEFAULT_FEATURED_PRODUCTS } from '../../data/mockProducts';

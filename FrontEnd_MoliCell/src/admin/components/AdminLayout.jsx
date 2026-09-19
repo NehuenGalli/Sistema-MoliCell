@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -12,7 +12,7 @@ import {
   X,
   UserCheck
 } from 'lucide-react';
-import { useAdminAuth } from '../context/AdminAuthContext';
+import { useAdminAuth } from '../context/useAdminAuth';
 import './AdminLayout.css';
 
 // #18 Fix: mapa de rutas → títulos dinámicos para el header
