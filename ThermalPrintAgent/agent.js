@@ -8,6 +8,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const { existsSync, readFileSync } = require('node:fs');
 const { dirname, join } = require('node:path');
+const { createHash } = require('node:crypto');
 
 const execFileAsync = promisify(execFile);
 // En el .exe de Windows, __dirname apunta al sistema virtual de pkg. Los
@@ -21,6 +22,9 @@ const DEFAULT_CONFIG = {
 };
 
 const config = loadConfig();
+const PRINT_DEDUP_WINDOW_MS = 5000;
+const activePrints = new Set();
+const recentPrints = new Map();
 
 function loadConfig() {
   if (!existsSync(CONFIG_PATH)) return DEFAULT_CONFIG;
@@ -191,7 +195,24 @@ const server = http.createServer(async (request, response) => {
       const { text, printerName } = await readJson(request);
       if (typeof text !== 'string' || !text.trim()) throw new Error('El ticket está vacío.');
       const printer = choosePrinter(await listPrinters(), printerName);
-      await printRaw(printer, createEscPosDocument(text));
+      const fingerprint = createHash('sha256').update(`${printer}\u0000${text}`).digest('hex');
+      const now = Date.now();
+      const previousPrint = recentPrints.get(fingerprint);
+
+      // Defensa adicional: aunque el navegador reintente o se hagan varios
+      // clics, el mismo ticket no entra a la cola dos veces en cinco segundos.
+      if (activePrints.has(fingerprint) || (previousPrint && now - previousPrint < PRINT_DEDUP_WINDOW_MS)) {
+        sendJson(response, 200, { ok: true, printer, duplicate: true });
+        return;
+      }
+
+      activePrints.add(fingerprint);
+      try {
+        await printRaw(printer, createEscPosDocument(text));
+        recentPrints.set(fingerprint, Date.now());
+      } finally {
+        activePrints.delete(fingerprint);
+      }
       sendJson(response, 200, { ok: true, printer });
       return;
     }
