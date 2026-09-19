@@ -1,0 +1,10 @@
+{
+  "name": "molicell-thermal-print-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agente local para imprimir tickets ESC/POS en impresoras térmicas Windows.",
+  "main": "agent.js",
+  "scripts": {
+    "start": "node agent.js"
+  }
+}

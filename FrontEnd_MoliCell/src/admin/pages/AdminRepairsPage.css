@@ -278,7 +278,7 @@
   }
 }
 
-/* ── TICKET IMPRESIÓN REPARACIÓN POS 80MM ── */
+/* ── TICKET IMPRESIÓN REPARACIÓN POS 58MM (Gadnic IT1050) ── */
 .btn-action.ticket {
   background-color: #F1F5F9;
   color: #0F172A;
@@ -297,16 +297,19 @@
   background-color: #FFFFFF;
   color: #0F172A;
   font-family: 'Courier New', Courier, monospace, sans-serif;
-  padding: 16px;
+  width: 100%;
+  max-width: 290px;
+  margin: 0 auto;
+  padding: 14px 12px;
   border: 1px dashed #CBD5E1;
   border-radius: 8px;
-  font-size: 0.82rem;
-  line-height: 1.4;
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .ticket-repair-header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .ticket-repair-header h4 {
@@ -315,11 +318,12 @@
   font-weight: 900;
   letter-spacing: 0.5px;
   font-family: inherit;
+  text-transform: uppercase;
 }
 
 .ticket-repair-subtitle {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #334155;
   text-transform: uppercase;
@@ -327,20 +331,20 @@
 
 .ticket-repair-contact {
   margin: 2px 0 0 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: #64748B;
 }
 
 .ticket-repair-divider {
   border-bottom: 1px dashed #0F172A;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .ticket-repair-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 0.8rem;
+  gap: 3px;
+  font-size: 0.76rem;
 }
 
 .ticket-repair-meta .meta-row {
@@ -353,12 +357,12 @@
   background: transparent;
   border: none;
   border-radius: 0;
-  padding: 4px 0;
-  margin: 6px 0;
+  padding: 2px 0;
+  margin: 4px 0;
 }
 
 .ticket-repair-box .box-title {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   color: #64748B;
@@ -367,22 +371,25 @@
 
 .ticket-repair-box .box-value {
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   color: #0F172A;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .ticket-repair-signature {
-  margin-top: 22px;
-  padding-top: 8px;
+  margin-top: 16px;
+  padding-top: 6px;
+  border-top: 1px dashed #94A3B8;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #475569;
 }
 
 .ticket-repair-footer {
   text-align: center;
-  margin-top: 10px;
-  font-size: 0.72rem;
+  margin-top: 6px;
+  font-size: 0.7rem;
   color: #475569;
 }
 
@@ -390,13 +397,41 @@
   margin: 2px 0;
 }
 
-/* Reglas de Impresión Navegador */
+.ticket-printer-hint {
+  font-size: 0.68rem;
+  color: #64748B;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* Reglas de Impresión Navegador (58mm - Gadnic IT1050) */
+@page {
+  size: 58mm auto;
+  margin: 0mm !important;
+}
+
 @media print {
+  html, body {
+    width: 58mm !important;
+    min-width: 58mm !important;
+    max-width: 58mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    display: block !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
   body * {
     visibility: hidden !important;
   }
 
   .ticket-repair-modal-overlay,
+  .ticket-repair-modal-card,
   .ticket-repair-printable,
   .ticket-repair-printable * {
     visibility: visible !important;
@@ -406,32 +441,112 @@
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
-    width: 100% !important;
+    right: auto !important;
+    bottom: auto !important;
+    inset: auto !important;
+    width: 58mm !important;
+    min-width: 58mm !important;
+    max-width: 58mm !important;
     height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     background: #FFFFFF !important;
     padding: 0 !important;
     margin: 0 !important;
+    display: block !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+    z-index: 99999 !important;
   }
 
   .ticket-repair-modal-card {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    width: 80mm !important;
-    max-width: 80mm !important;
-    margin: 0 auto !important;
-  }
-
-  .ticket-repair-printable {
+    position: static !important;
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
-    width: 80mm !important;
-    max-width: 80mm !important;
+    margin: 0 !important;
+    width: 58mm !important;
+    min-width: 58mm !important;
+    max-width: 58mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    background: #FFFFFF !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .ticket-repair-printable {
+    position: static !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0mm 2mm 2mm 2mm !important;
+    margin: 0 auto !important;
+    width: 54mm !important;
+    max-width: 54mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    color: #000000 !important;
+    background: #FFFFFF !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+    display: block !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .ticket-repair-printable * {
+    color: #000000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .ticket-repair-header h4 {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+  }
+
+  .ticket-repair-subtitle {
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+  }
+
+  .ticket-repair-divider {
+    border-bottom: 1px dashed #000000 !important;
+    margin: 4px 0 !important;
+  }
+
+  .ticket-repair-meta {
+    font-size: 10px !important;
+    gap: 2px !important;
+  }
+
+  .ticket-repair-box .box-title {
+    font-size: 9px !important;
+    color: #000000 !important;
+  }
+
+  .ticket-repair-box .box-value {
+    font-size: 10.5px !important;
+    color: #000000 !important;
+  }
+
+  .ticket-repair-footer {
+    margin-top: 4px !important;
+    font-size: 9.5px !important;
+    color: #000000 !important;
   }
 
   .no-print {
     display: none !important;
+    visibility: hidden !important;
   }
 }
