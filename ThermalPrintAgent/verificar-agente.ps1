@@ -1,5 +1,13 @@
 $ErrorActionPreference = 'Stop'
-$origin = 'https://molicell.store'
+$agentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+$configPath = Join-Path $agentDirectory 'agent.config.json'
+$examplePath = Join-Path $agentDirectory 'agent.config.example.json'
+$config = if (Test-Path $configPath) {
+  Get-Content $configPath -Raw | ConvertFrom-Json
+} else {
+  Get-Content $examplePath -Raw | ConvertFrom-Json
+}
+$origin = @($config.allowedOrigins)[0]
 
 try {
   $response = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:17858/health' -Headers @{ Origin = $origin }
