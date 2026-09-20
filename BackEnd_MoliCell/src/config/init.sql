@@ -70,6 +70,19 @@ CREATE TABLE venta_detalle (
     cantidad INT NOT NULL CONSTRAINT chk_cantidad_positiva CHECK (cantidad > 0)
 );
 
+CREATE TABLE gasto (
+    id SERIAL PRIMARY KEY,
+    categoria VARCHAR(30) NOT NULL CHECK (categoria IN ('Factura', 'Proveedor', 'Alquiler', 'Servicios', 'Impuestos', 'Sueldos', 'General', 'Otro')),
+    descripcion VARCHAR(200) NOT NULL,
+    monto NUMERIC(12, 2) NOT NULL CHECK (monto > 0),
+    fecha DATE NOT NULL DEFAULT CURRENT_DATE,
+    proveedor VARCHAR(120),
+    comprobante VARCHAR(80),
+    notas TEXT,
+    creado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    actualizado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX idx_producto_activo_stock ON producto (activo, stock);
 CREATE INDEX idx_producto_marca ON producto (marca_id);
 CREATE INDEX idx_producto_categoria_categoria ON producto_categoria (categoria_id, producto_id);
@@ -77,3 +90,5 @@ CREATE INDEX idx_servicio_tecnico_estado_creado ON servicio_tecnico (estado, cre
 CREATE INDEX idx_servicio_tecnico_codigo_upper ON servicio_tecnico (UPPER(codigo_seguimiento));
 CREATE INDEX idx_venta_creado ON venta (creado_en DESC);
 CREATE INDEX idx_venta_detalle_venta ON venta_detalle (venta_id);
+CREATE INDEX idx_gasto_fecha ON gasto (fecha DESC, id DESC);
+CREATE INDEX idx_gasto_categoria_fecha ON gasto (categoria, fecha DESC);

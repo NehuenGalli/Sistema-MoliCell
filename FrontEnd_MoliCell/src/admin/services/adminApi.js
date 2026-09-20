@@ -5,7 +5,8 @@ import {
   marcaService,
   tecnicoService,
   ventaService,
-  dashboardService
+  dashboardService,
+  gastoService
 } from '../../services';
 
 // ─── 1. AUTENTICACIÓN ────────────────────────────────────────────────────────
@@ -188,3 +189,9 @@ export const createAdminVenta = async (data) => {
     throw e;
   }
 };
+
+// ─── 6. GASTOS ───────────────────────────────────────────────────────────────
+export const fetchAdminGastos = (params = {}) => gastoService.obtenerGastos(params);
+export const createAdminGasto = (data) => gastoService.crearGasto(data);
+export const updateAdminGasto = (id, data) => gastoService.actualizarGasto(id, data);
+export const deleteAdminGasto = (id) => gastoService.eliminarGasto(id);
