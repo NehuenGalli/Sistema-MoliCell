@@ -6,7 +6,8 @@ import {
   tecnicoService,
   ventaService,
   dashboardService,
-  gastoService
+  gastoService,
+  deudaService
 } from '../../services';
 
 // ─── 1. AUTENTICACIÓN ────────────────────────────────────────────────────────
@@ -195,3 +196,12 @@ export const fetchAdminGastos = (params = {}) => gastoService.obtenerGastos(para
 export const createAdminGasto = (data) => gastoService.crearGasto(data);
 export const updateAdminGasto = (id, data) => gastoService.actualizarGasto(id, data);
 export const deleteAdminGasto = (id) => gastoService.eliminarGasto(id);
+
+// ─── 7. DEUDORES ─────────────────────────────────────────────────────────────
+export const fetchAdminDeudas = (params = {}) => deudaService.obtenerDeudas(params);
+export const fetchAdminDeuda = (id) => deudaService.obtenerDeuda(id);
+export const createAdminDeuda = (data) => deudaService.crearDeuda(data);
+export const updateAdminDeuda = (id, data) => deudaService.actualizarDeuda(id, data);
+export const deleteAdminDeuda = (id) => deudaService.eliminarDeuda(id);
+export const createAdminDeudaPago = (id, data) => deudaService.registrarPago(id, data);
+export const deleteAdminDeudaPago = (id, pagoId) => deudaService.eliminarPago(id, pagoId);

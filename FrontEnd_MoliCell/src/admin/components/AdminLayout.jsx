@@ -7,6 +7,7 @@ import {
   Wrench, 
   Receipt, 
   WalletCards,
+  Users,
   ExternalLink, 
   LogOut, 
   Menu, 
@@ -33,6 +34,7 @@ const ROUTE_TITLES = {
   '/admin/reparaciones': 'Servicio Técnico',
   '/admin/ventas': 'Ventas & Pedidos',
   '/admin/gastos': 'Gastos',
+  '/admin/deudores': 'Deudores',
 };
 
 const getPageTitle = (pathname) => {
@@ -117,6 +119,11 @@ export default function AdminLayout() {
           <NavLink to="/admin/gastos" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
             <WalletCards size={18} />
             <span>Gastos</span>
+          </NavLink>
+
+          <NavLink to="/admin/deudores" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <Users size={18} />
+            <span>Deudores</span>
           </NavLink>
         </nav>
 

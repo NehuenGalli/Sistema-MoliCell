@@ -6,8 +6,14 @@ import {
   createAdminReparacion,
   createAdminVenta,
   createAdminGasto,
+  createAdminDeuda,
+  createAdminDeudaPago,
+  deleteAdminDeuda,
+  deleteAdminDeudaPago,
   deleteAdminGasto,
   fetchAdminGastos,
+  fetchAdminDeuda,
+  fetchAdminDeudas,
   deleteAdminCategoria,
   deleteAdminMarca,
   deleteAdminProducto,
@@ -23,8 +29,9 @@ import {
   updateAdminProducto,
   updateAdminReparacion,
   updateAdminGasto,
+  updateAdminDeuda,
 } from './adminApi';
-import { authService, categoriaService, dashboardService, gastoService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
+import { authService, categoriaService, dashboardService, deudaService, gastoService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
 
 vi.mock('../../services', () => ({
   authService: { login: vi.fn() },
@@ -41,6 +48,7 @@ vi.mock('../../services', () => ({
   },
   ventaService: { obtenerVentas: vi.fn(), crearVenta: vi.fn() },
   gastoService: { obtenerGastos: vi.fn(), crearGasto: vi.fn(), actualizarGasto: vi.fn(), eliminarGasto: vi.fn() },
+  deudaService: { obtenerDeudas: vi.fn(), obtenerDeuda: vi.fn(), crearDeuda: vi.fn(), actualizarDeuda: vi.fn(), eliminarDeuda: vi.fn(), registrarPago: vi.fn(), eliminarPago: vi.fn() },
 }));
 
 describe('fachada adminApi', () => {
@@ -57,6 +65,8 @@ describe('fachada adminApi', () => {
       tecnicoService.actualizarServicioTecnico, tecnicoService.eliminarServicioTecnico,
       ventaService.obtenerVentas, ventaService.crearVenta,
       gastoService.obtenerGastos, gastoService.crearGasto, gastoService.actualizarGasto, gastoService.eliminarGasto,
+      deudaService.obtenerDeudas, deudaService.obtenerDeuda, deudaService.crearDeuda, deudaService.actualizarDeuda,
+      deudaService.eliminarDeuda, deudaService.registrarPago, deudaService.eliminarPago,
     ];
     services.forEach((service) => service.mockResolvedValue({ data: { id: 1 }, usuario: { id: 1 }, token: 'ignored' }));
   });
@@ -69,6 +79,8 @@ describe('fachada adminApi', () => {
     await fetchAdminReparaciones({ page: 1 });
     await fetchAdminVentas({ page: 1 });
     await fetchAdminGastos({ periodo: 'mes' });
+    await fetchAdminDeudas({ estado: 'activas' });
+    await fetchAdminDeuda(1);
     await expect(fetchAdminResumen()).resolves.toEqual({ id: 1 });
   });
 
@@ -88,6 +100,11 @@ describe('fachada adminApi', () => {
     await createAdminGasto({ monto: 1 });
     await updateAdminGasto(1, { monto: 2 });
     await deleteAdminGasto(1);
+    await createAdminDeuda({ monto_total: 1 });
+    await updateAdminDeuda(1, { monto_total: 2 });
+    await deleteAdminDeuda(1);
+    await createAdminDeudaPago(1, { monto: 1 });
+    await deleteAdminDeudaPago(1, 2);
   });
 
   it('convierte el fallo de login y propaga errores operativos', async () => {
