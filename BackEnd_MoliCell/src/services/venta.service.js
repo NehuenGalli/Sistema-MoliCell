@@ -31,7 +31,7 @@ const crearVenta = async (ventaData) => {
 
         // Bloquear filas antes de validar stock evita sobreventa entre requests concurrentes.
         const productosResult = await client.query(
-            `SELECT id, precio, descuento, descuento_precio, stock, activo
+            `SELECT id, precio, precio_costo, descuento, descuento_precio, stock, activo
              FROM producto
              WHERE id = ANY($1::int[])
              ORDER BY id
@@ -43,7 +43,9 @@ const crearVenta = async (ventaData) => {
             throw businessError('No se puede crear la venta porque uno o más productos no existen.', 404);
         }
 
-        let montoCalculado = 0;
+        let subtotalCalculado = 0;
+        const preciosUnitarios = [];
+        const costosUnitarios = [];
         for (const producto of productosResult.rows) {
             const cantidad = cantidadesPorProducto.get(producto.id);
             if (!producto.activo) throw businessError('Uno o más productos no están activos.', 409);
@@ -53,13 +55,21 @@ const crearVenta = async (ventaData) => {
             const precioVigente = producto.descuento && producto.descuento_precio
                 ? Number(producto.descuento_precio)
                 : Number(producto.precio);
-            montoCalculado += precioVigente * cantidad;
+            subtotalCalculado += precioVigente * cantidad;
+            preciosUnitarios.push(precioVigente);
+            costosUnitarios.push(Number(producto.precio_costo) || 0);
         }
-        montoCalculado = Math.round((montoCalculado + Number.EPSILON) * 100) / 100;
+        subtotalCalculado = Math.round((subtotalCalculado + Number.EPSILON) * 100) / 100;
+        const descuentoPorcentaje = metodo_pago === 'Efectivo' ? 15 : 0;
+        const descuentoMonto = Math.round((subtotalCalculado * descuentoPorcentaje / 100 + Number.EPSILON) * 100) / 100;
+        const montoCalculado = Math.round((subtotalCalculado - descuentoMonto + Number.EPSILON) * 100) / 100;
 
         // 2. Insertamos la venta principal con su código único
-        const queryVenta = 'INSERT INTO venta (codigo_venta, monto, metodo_pago) VALUES ($1, $2, $3) RETURNING *';
-        const valuesVenta = [codigoFinal, montoCalculado, metodo_pago];
+        const queryVenta = `
+            INSERT INTO venta (codigo_venta, monto, subtotal, descuento_porcentaje, descuento_monto, metodo_pago)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+        `;
+        const valuesVenta = [codigoFinal, montoCalculado, subtotalCalculado, descuentoPorcentaje, descuentoMonto, metodo_pago];
         const resultVenta = await client.query(queryVenta, valuesVenta);
         const ventaId = resultVenta.rows[0].id;
 
@@ -77,10 +87,12 @@ const crearVenta = async (ventaData) => {
 
         // 4. GUARDAR EN VENTA_DETALLE MASIVO
         const queryInsertDetalles = `
-            INSERT INTO venta_detalle (venta_id, producto_id, cantidad)
-            SELECT $1, unnest($2::int[]), unnest($3::int[]);
+            INSERT INTO venta_detalle (venta_id, producto_id, cantidad, precio_unitario, costo_unitario)
+            SELECT $1, producto_id, cantidad, precio_unitario, costo_unitario
+            FROM unnest($2::int[], $3::int[], $4::numeric[], $5::numeric[])
+                AS detalle(producto_id, cantidad, precio_unitario, costo_unitario);
         `;
-        await client.query(queryInsertDetalles, [ventaId, idsProductos, cantidades]);
+        await client.query(queryInsertDetalles, [ventaId, idsProductos, cantidades, preciosUnitarios, costosUnitarios]);
 
         await client.query('COMMIT');
 
@@ -147,14 +159,15 @@ const obtenerVentas = async (params = {}) => {
     const offsetIndex = queryValues.length;
 
     const query = `
-        SELECT v.id, v.codigo_venta, v.monto, v.metodo_pago, v.fecha, v.creado_en,
+        SELECT v.id, v.codigo_venta, v.monto, v.subtotal, v.descuento_porcentaje, v.descuento_monto,
+               v.metodo_pago, v.fecha, v.creado_en,
                COALESCE(
                    json_agg(
                        json_build_object(
                            'producto_id', p.id,
                            'name', p.name,
-                           'precio', p.precio,
-                           'precio_costo', p.precio_costo,
+                           'precio', vd.precio_unitario,
+                           'precio_costo', vd.costo_unitario,
                            'cantidad', vd.cantidad
                        )
                    ) FILTER (WHERE p.id IS NOT NULL), '[]'
@@ -184,13 +197,13 @@ const obtenerVentas = async (params = {}) => {
 
 const obtenerVentaPorId = async (id) => {
     const queryVenta = `
-        SELECT id, codigo_venta, monto, metodo_pago, fecha, creado_en 
+        SELECT id, codigo_venta, monto, subtotal, descuento_porcentaje, descuento_monto, metodo_pago, fecha, creado_en
         FROM venta 
         WHERE id = $1;
     `;
 
     const queryProductos = `
-        SELECT p.id AS producto_id, p.name, p.precio, p.precio_costo, vd.cantidad
+        SELECT p.id AS producto_id, p.name, vd.precio_unitario AS precio, vd.costo_unitario AS precio_costo, vd.cantidad
         FROM venta_detalle vd
         JOIN producto p ON vd.producto_id = p.id
         WHERE vd.venta_id = $1;

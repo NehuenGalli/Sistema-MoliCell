@@ -12,6 +12,11 @@ const ventaToResponseDTO = (venta) => {
         : [];
 
     const monto = Number(venta.monto) || 0;
+    const subtotal = venta.subtotal === undefined || venta.subtotal === null
+        ? productos.reduce((sum, p) => sum + p.precio * p.cantidad, 0)
+        : Number(venta.subtotal);
+    const descuento_porcentaje = Number(venta.descuento_porcentaje) || 0;
+    const descuento_monto = Number(venta.descuento_monto) || 0;
     const costo_total = productos.reduce((sum, p) => sum + ((Number(p.precio_costo) || 0) * (Number(p.cantidad) || 1)), 0);
     const ganancia = monto - costo_total;
 
@@ -19,6 +24,9 @@ const ventaToResponseDTO = (venta) => {
         id: venta.id,
         codigo_venta: venta.codigo_venta || `VEN-${1000 + Number(venta.id)}`,
         monto,
+        subtotal,
+        descuento_porcentaje,
+        descuento_monto,
         costo_total,
         ganancia,
         metodo_pago: venta.metodo_pago,

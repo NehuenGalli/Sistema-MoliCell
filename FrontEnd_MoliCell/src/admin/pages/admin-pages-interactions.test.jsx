@@ -78,7 +78,10 @@ const reparacion = {
 const venta = {
   id: 1,
   codigo_venta: 'VEN-1001',
-  monto: 500000,
+  monto: 425000,
+  subtotal: 500000,
+  descuento_porcentaje: 15,
+  descuento_monto: 75000,
   costo_total: 350000,
   metodo_pago: 'Efectivo',
   creado_en: '2026-01-02T00:00:00.000Z',
@@ -198,15 +201,17 @@ describe('flujos administrativos', () => {
     })));
 
     fireEvent.click(screen.getByRole('button', { name: /Nueva Venta/i }));
+    expect(screen.getByText(/15 % de descuento/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Registrar Venta/i }));
     expect(screen.getByText(/Debés agregar al menos un producto/i)).toBeInTheDocument();
 
     fireEvent.click(await screen.findByRole('button', { name: 'Agregar' }));
     fireEvent.click(screen.getByRole('button', { name: /Registrar Venta/i }));
     await waitFor(() => expect(createAdminVenta).toHaveBeenCalledWith(expect.objectContaining({
-      monto: 500000,
+      monto: 425000,
       metodo_pago: 'Efectivo',
       productos: [{ producto_id: 1, cantidad: 1 }],
     })));
+    expect(await screen.findByText(/Descuento efectivo \(15%\)/i)).toBeInTheDocument();
   });
 });

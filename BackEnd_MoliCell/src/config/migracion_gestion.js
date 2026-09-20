@@ -5,6 +5,26 @@ const migrar = async () => {
     try {
         await client.query('BEGIN');
         await client.query(`
+            ALTER TABLE venta ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12, 2);
+            ALTER TABLE venta ADD COLUMN IF NOT EXISTS descuento_porcentaje NUMERIC(5, 2) DEFAULT 0;
+            ALTER TABLE venta ADD COLUMN IF NOT EXISTS descuento_monto NUMERIC(12, 2) DEFAULT 0;
+            UPDATE venta SET subtotal = monto WHERE subtotal IS NULL;
+            UPDATE venta SET descuento_porcentaje = 0 WHERE descuento_porcentaje IS NULL;
+            UPDATE venta SET descuento_monto = 0 WHERE descuento_monto IS NULL;
+            ALTER TABLE venta ALTER COLUMN subtotal SET NOT NULL;
+            ALTER TABLE venta ALTER COLUMN descuento_porcentaje SET NOT NULL;
+            ALTER TABLE venta ALTER COLUMN descuento_monto SET NOT NULL;
+
+            ALTER TABLE venta_detalle ADD COLUMN IF NOT EXISTS precio_unitario NUMERIC(12, 2);
+            ALTER TABLE venta_detalle ADD COLUMN IF NOT EXISTS costo_unitario NUMERIC(12, 2);
+            UPDATE venta_detalle vd
+            SET precio_unitario = COALESCE(vd.precio_unitario, CASE WHEN p.descuento AND p.descuento_precio IS NOT NULL THEN p.descuento_precio ELSE p.precio END),
+                costo_unitario = COALESCE(vd.costo_unitario, p.precio_costo, 0)
+            FROM producto p WHERE p.id = vd.producto_id AND (vd.precio_unitario IS NULL OR vd.costo_unitario IS NULL);
+            ALTER TABLE venta_detalle ALTER COLUMN precio_unitario SET NOT NULL;
+            ALTER TABLE venta_detalle ALTER COLUMN costo_unitario SET DEFAULT 0;
+            ALTER TABLE venta_detalle ALTER COLUMN costo_unitario SET NOT NULL;
+
             CREATE TABLE IF NOT EXISTS gasto (
                 id SERIAL PRIMARY KEY,
                 categoria VARCHAR(30) NOT NULL CHECK (categoria IN ('Factura', 'Proveedor', 'Alquiler', 'Servicios', 'Impuestos', 'Sueldos', 'General', 'Otro')),
