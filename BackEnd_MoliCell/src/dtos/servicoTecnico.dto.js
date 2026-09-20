@@ -10,6 +10,7 @@ const servicioTecnicoToResponseDTO = (servicioTecnico) => {
         falla_descripcion: servicioTecnico.falla_descripcion,
         presupuesto_estimado: servicioTecnico.presupuesto_estimado,
         estado: servicioTecnico.estado,
+        fecha_reconocimiento: servicioTecnico.fecha_reconocimiento,
         creado_en: servicioTecnico.creado_en
     };
 };

@@ -50,6 +50,7 @@ vi.mock('../admin/services/adminApi', () => ({
   fetchAdminVentas: vi.fn().mockResolvedValue({ data: [], pagination: { totalItems: 0, totalPages: 1, currentPage: 1, limit: 15 } }),
   fetchAdminGastos: vi.fn().mockResolvedValue({ gastos: [], resumen: {}, pagination: { totalItems: 0, totalPages: 1, currentPage: 1, limit: 20 } }),
   fetchAdminDeudas: vi.fn().mockResolvedValue({ deudas: [], resumen: {}, pagination: { totalItems: 0, totalPages: 1, currentPage: 1, limit: 20 } }),
+  fetchAdminGanancias: vi.fn().mockResolvedValue({ resumen: { ingresos_totales: 0, egresos_totales: 0, ganancia_neta: 0 }, detalle: { ventas: [], servicios: [], gastos: [], deudas: [], cobros: [] } }),
   createAdminProducto: vi.fn(),
   updateAdminProducto: vi.fn(),
   deleteAdminProducto: vi.fn(),
@@ -107,6 +108,7 @@ describe('smoke test de todas las rutas', () => {
     ['/admin/ventas', /Ventas & Registro de Caja/i],
     ['/admin/gastos', /^Gastos$/i],
     ['/admin/deudores', /^Deudores$/i],
+    ['/admin/ganancias', /^Ganancias$/i],
   ])('renderiza la ruta protegida %s con sesión válida', async (route, expected) => {
     renderRoute(route, true);
     await waitFor(() => expect(screen.getAllByText(expected).length).toBeGreaterThan(0));

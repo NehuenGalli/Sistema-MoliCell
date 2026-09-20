@@ -12,6 +12,7 @@ const tecnicoRoute = require('./src/routes/tecnico.route');
 const dashboardRoute = require('./src/routes/dashboard.route');
 const gastoRoute = require('./src/routes/gasto.route');
 const deudaRoute = require('./src/routes/deuda.route');
+const gananciaRoute = require('./src/routes/ganancia.route');
 
 
 const db = require('./src/config/db');
@@ -72,6 +73,7 @@ app.use('/tecnico', tecnicoRoute);
 app.use('/dashboard', dashboardRoute);
 app.use('/gasto', gastoRoute);
 app.use('/deuda', deudaRoute);
+app.use('/ganancia', gananciaRoute);
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });

@@ -8,6 +8,7 @@ import { marcaService } from './marcaService';
 import { prepararPayloadProducto, productoService } from './productoService';
 import { tecnicoService } from './tecnicoService';
 import { ventaService } from './ventaService';
+import { gananciaService } from './gananciaService';
 
 describe('servicios HTTP', () => {
   let mock;
@@ -100,8 +101,10 @@ describe('servicios HTTP', () => {
     await ventaService.obtenerVentas({ page: 1 });
     await ventaService.crearVenta({ productos: [] });
     await dashboardService.obtenerResumen();
+    await gananciaService.obtenerGanancias({ periodo: 'mes' });
 
     expect(mock.history.get.some((request) => request.url.includes('MC-ABC%20123'))).toBe(true);
     expect(mock.history.get.some((request) => request.url === '/dashboard/resumen')).toBe(true);
+    expect(mock.history.get.some((request) => request.url === '/ganancia')).toBe(true);
   });
 });
