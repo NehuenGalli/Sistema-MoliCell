@@ -14,6 +14,14 @@ import {
 } from 'lucide-react';
 import { useAdminAuth } from '../context/useAdminAuth';
 import './AdminLayout.css';
+// Las páginas protegidas se cargan con React.lazy, pero sus estilos comparten
+// varios selectores globales. Cargarlos una sola vez y en un orden fijo evita
+// que la apariencia cambie según el orden en que se visitan las secciones.
+import '../pages/AdminDashboardPage.css';
+import '../pages/AdminProductsPage.css';
+import '../pages/AdminCategoriesBrandsPage.css';
+import '../pages/AdminRepairsPage.css';
+import '../pages/AdminSalesPage.css';
 
 // #18 Fix: mapa de rutas → títulos dinámicos para el header
 const ROUTE_TITLES = {
@@ -36,10 +44,21 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
 
-  const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setLogoutError('');
+    try {
+      await logout();
+      navigate('/admin/login');
+    } catch {
+      setLogoutError('No se pudo cerrar la sesión en el servidor. Intentá nuevamente.');
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const closeSidebar = () => setIsMobileSidebarOpen(false);
@@ -99,10 +118,11 @@ export default function AdminLayout() {
             <span>Ver Tienda Pública</span>
           </a>
 
-          <button type="button" onClick={handleLogout} className="btn-logout">
+          <button type="button" onClick={handleLogout} className="btn-logout" disabled={isLoggingOut}>
             <LogOut size={18} />
-            <span>Cerrar Sesión</span>
+            <span>{isLoggingOut ? 'Cerrando…' : 'Cerrar Sesión'}</span>
           </button>
+          {logoutError && <span role="alert" className="field-error-text">{logoutError}</span>}
         </div>
       </aside>
 

@@ -41,6 +41,7 @@ describe('CRUD /venta', () => {
             expect(res.status).toBe(201);
             expect(res.body.message).toBe('Venta agregada exitosamente');
             expect(res.body.data).toHaveProperty('id');
+            expect(res.body.data.monto).toBe(1000); // 2 × $500; ignora el monto manipulado del cliente
             ventaCreada = res.body.data;
 
             // Verificar que el stock se descontó
@@ -120,7 +121,7 @@ describe('CRUD /venta', () => {
 
     // ❌ ESCENARIOS DE FALLO — Validación Joi
     describe('❌ Validación Joi', () => {
-        it('debería rechazar venta sin monto → 400', async () => {
+        it('debería calcular el monto en servidor aunque el cliente no lo envíe', async () => {
             const res = await request(app)
                 .post('/venta')
                 .set('Authorization', `Bearer ${token}`)
@@ -129,7 +130,8 @@ describe('CRUD /venta', () => {
                     productos: [{ producto_id: producto1.id, cantidad: 1 }]
                 });
 
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(201);
+            expect(res.body.data.monto).toBe(500);
         });
 
         it('debería rechazar venta sin productos → 400', async () => {
@@ -200,6 +202,22 @@ describe('CRUD /venta', () => {
                     monto: 100,
                     metodo_pago: 'Efectivo',
                     productos: [{ producto_id: producto1.id, cantidad: 0 }]
+                });
+
+            expect(res.status).toBe(400);
+        });
+
+        it('debería rechazar productos duplicados para evitar descuentos ambiguos de stock', async () => {
+            const res = await request(app)
+                .post('/venta')
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    monto: 1,
+                    metodo_pago: 'Efectivo',
+                    productos: [
+                        { producto_id: producto1.id, cantidad: 1 },
+                        { producto_id: producto1.id, cantidad: 1 }
+                    ]
                 });
 
             expect(res.status).toBe(400);
@@ -286,6 +304,14 @@ describe('CRUD /venta', () => {
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res.status).toBe(404);
+        });
+
+        it('debería limitar la paginación a 100 elementos', async () => {
+            const res = await request(app)
+                .get('/venta?limit=9999')
+                .set('Authorization', `Bearer ${token}`);
+            expect(res.status).toBe(200);
+            expect(res.body.pagination.limit).toBe(100);
         });
 
         it('debería permitir venta con stock exacto (stock=5, cantidad=5) → 201 + stock queda en 0', async () => {

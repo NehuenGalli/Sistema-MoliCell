@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient, { cachedGet, invalidateGetCache } from './apiClient';
 
 /**
  * Servicio para consumir la API de Servicio Técnico / Ordenes de Reparación
@@ -9,7 +9,7 @@ export const tecnicoService = {
    * GET /tecnico/seguimiento/:codigo
    */
   consultarSeguimiento: async (codigo) => {
-    return await apiClient.get(`/tecnico/seguimiento/${codigo}`);
+    return await cachedGet(`/tecnico/seguimiento/${encodeURIComponent(codigo)}`, {}, 5000);
   },
 
   /**
@@ -17,7 +17,7 @@ export const tecnicoService = {
    * GET /tecnico?page=1&limit=20&search=...&estado=...
    */
   obtenerServiciosTecnicos: async (params = {}) => {
-    return await apiClient.get('/tecnico', { params });
+    return await cachedGet('/tecnico', { params }, 2000);
   },
 
   /**
@@ -25,7 +25,10 @@ export const tecnicoService = {
    * POST /tecnico
    */
   crearServicioTecnico: async (datos) => {
-    return await apiClient.post('/tecnico', datos);
+    const result = await apiClient.post('/tecnico', datos);
+    invalidateGetCache('/tecnico');
+    invalidateGetCache('/dashboard');
+    return result;
   },
 
   /**
@@ -33,7 +36,10 @@ export const tecnicoService = {
    * PATCH /tecnico/:id
    */
   actualizarServicioTecnico: async (id, datos) => {
-    return await apiClient.patch(`/tecnico/${id}`, datos);
+    const result = await apiClient.patch(`/tecnico/${id}`, datos);
+    invalidateGetCache('/tecnico');
+    invalidateGetCache('/dashboard');
+    return result;
   },
 
   /**
@@ -41,7 +47,10 @@ export const tecnicoService = {
    * DELETE /tecnico/:id
    */
   eliminarServicioTecnico: async (id) => {
-    return await apiClient.delete(`/tecnico/${id}`);
+    const result = await apiClient.delete(`/tecnico/${id}`);
+    invalidateGetCache('/tecnico');
+    invalidateGetCache('/dashboard');
+    return result;
   }
 };
 

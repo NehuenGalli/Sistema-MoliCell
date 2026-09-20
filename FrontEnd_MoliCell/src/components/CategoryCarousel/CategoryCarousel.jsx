@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./CategoryCarousel.css";
 
-import acesoriosImg from "../../assets/acesorios.png";
-import auricularesImg from "../../assets/auriculares.png";
-import celularesImg from "../../assets/celulares.png";
-import repuestosImg from "../../assets/repuestos.png";
-import impresiones3dImg from "../../assets/impresiones 3D.png";
+import acesoriosImg from "../../assets/acesorios.webp";
+import auricularesImg from "../../assets/auriculares.webp";
+import celularesImg from "../../assets/celulares.webp";
+import repuestosImg from "../../assets/repuestos.webp";
+import impresiones3dImg from "../../assets/impresiones-3d.webp";
 
 const categories = [
   { id: 1, name: "Accesorios", image: acesoriosImg, link: "/catalogo?categoria=Accesorios" },

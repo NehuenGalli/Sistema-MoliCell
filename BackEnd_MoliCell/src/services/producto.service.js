@@ -1,6 +1,11 @@
 const pool = require('../config/db');
 const { toProductoAdminDTO, toProductoPublicoDTO } = require('../dtos/producto.dto');
 
+const normalizarLimite = (limit, fallback, max) => {
+    const parsed = Number.parseInt(limit, 10);
+    return Number.isFinite(parsed) ? Math.min(max, Math.max(1, parsed)) : fallback;
+};
+
 
 // CREAR PRODUCTO
 const crearProducto = async (datosProducto) => {
@@ -136,11 +141,8 @@ const obtenerProductos = async (options = {}) => {
 
     const whereClause = `WHERE ${conditions.join(' AND ')}`;
     
-    let limitClause = '';
-    if (limit && !isNaN(parseInt(limit, 10))) {
-        params.push(parseInt(limit, 10));
-        limitClause = `LIMIT $${params.length}`;
-    }
+    params.push(normalizarLimite(limit, 200, 200));
+    const limitClause = `LIMIT $${params.length}`;
 
     const query = `
         SELECT p.*,
@@ -182,11 +184,8 @@ const obtenerProductosAdmin = async (options = {}) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     
-    let limitClause = '';
-    if (limit && !isNaN(parseInt(limit, 10))) {
-        params.push(parseInt(limit, 10));
-        limitClause = `LIMIT $${params.length}`;
-    }
+    params.push(normalizarLimite(limit, 500, 500));
+    const limitClause = `LIMIT $${params.length}`;
 
     const query = `
         SELECT p.*,
@@ -224,7 +223,7 @@ const obtenerProductoPorId = async (id) => {
         LEFT JOIN marca m ON p.marca_id = m.id
         LEFT JOIN producto_categoria pc ON p.id = pc.producto_id
         LEFT JOIN categoria c ON pc.categoria_id = c.id
-        WHERE p.id = $1
+        WHERE p.id = $1 AND p.activo = true
         GROUP BY p.id, m.name;
     `;
     const result = await pool.query(query, [id]);
@@ -270,7 +269,9 @@ const obtenerProductosPorCategoria = async (categoria_id) => {
         JOIN producto_categoria pc ON p.id = pc.producto_id
         LEFT JOIN categoria c ON pc.categoria_id = c.id
         WHERE pc.categoria_id = $1 AND p.activo = true AND p.stock > 0
-        GROUP BY p.id, m.name;
+        GROUP BY p.id, m.name
+        ORDER BY p.id DESC
+        LIMIT 200;
     `;
     const result = await pool.query(query, [categoria_id]);
     return result.rows.map(toProductoPublicoDTO);
@@ -291,7 +292,9 @@ const obtenerProductosPorMarca = async (marca_id) => {
         LEFT JOIN producto_categoria pc ON p.id = pc.producto_id
         LEFT JOIN categoria c ON pc.categoria_id = c.id
         WHERE p.marca_id = $1 AND p.activo = true AND p.stock > 0
-        GROUP BY p.id, m.name;
+        GROUP BY p.id, m.name
+        ORDER BY p.id DESC
+        LIMIT 200;
     `;
     const result = await pool.query(query, [marca_id]);
     return result.rows.map(toProductoPublicoDTO);

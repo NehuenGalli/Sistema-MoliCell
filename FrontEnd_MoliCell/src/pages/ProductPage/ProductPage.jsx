@@ -138,7 +138,7 @@ export default function ProductPage({ productos = [], onAddToCart }) {
 
   const handleWhatsAppConsult = () => {
     const text = `Hola Moli-Cell! Me interesa el producto *${product.name || product.nombre}* (${formatPrice(currentPrice)}). ¿Tienen stock disponible?`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

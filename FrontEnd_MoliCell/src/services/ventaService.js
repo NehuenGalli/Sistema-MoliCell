@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient, { cachedGet, invalidateGetCache } from './apiClient';
 
 /**
  * Servicio para consumir la API de Ventas / Registros de compra del Backend
@@ -10,7 +10,7 @@ export const ventaService = {
    * Params opcionales: { filtro: 'semana'|'mes', fecha: 'YYYY-MM-DD' }
    */
   obtenerVentas: async (params = {}) => {
-    return await apiClient.get('/venta', { params });
+    return await cachedGet('/venta', { params }, 2000);
   },
 
   /**
@@ -19,7 +19,11 @@ export const ventaService = {
    * Body esperado: { monto, metodo_pago, productos: [ { producto_id, cantidad } ] }
    */
   crearVenta: async (datosVenta) => {
-    return await apiClient.post('/venta', datosVenta);
+    const result = await apiClient.post('/venta', datosVenta);
+    invalidateGetCache('/venta');
+    invalidateGetCache('/producto');
+    invalidateGetCache('/dashboard');
+    return result;
   }
 };
 

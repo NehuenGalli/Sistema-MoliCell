@@ -18,7 +18,6 @@ import {
 import { fetchAdminVentas, createAdminVenta } from '../services/adminApi';
 import { productoService } from '../../services/productoService';
 import { printThermalTicket } from '../utils/printThermalTicket';
-import './AdminSalesPage.css';
 
 export default function AdminSalesPage() {
   const [ventas, setVentas] = useState([]);
@@ -105,11 +104,6 @@ export default function AdminSalesPage() {
     }
   };
 
-  useEffect(() => {
-    const loadTimer = window.setTimeout(loadData, 0);
-    return () => window.clearTimeout(loadTimer);
-  }, []);
-
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
     setTimeout(() => setToastMsg({ text: '', type: 'success' }), 3500);
@@ -161,8 +155,11 @@ export default function AdminSalesPage() {
       maxMonto: ''
     };
     setFilterParams(defaultParams);
-    setSearchTerm('');
-    handleApplyServerFilters(defaultParams, '', 1);
+    if (searchTerm) {
+      setSearchTerm('');
+    } else {
+      handleApplyServerFilters(defaultParams, '', 1);
+    }
   };
 
   // Debounce para búsqueda en servidor por término

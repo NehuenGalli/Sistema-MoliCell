@@ -7,7 +7,8 @@ const WHATSAPP_NUMBER = '5491134324675';
 
 export default function Footer({ categorias = [] }) {
   const handleWhatsAppClick = () => {
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%20Moli-Cell!%20Tengo%20una%20consulta.`, '_blank');
+    const message = encodeURIComponent('Hola Moli-Cell! Tengo una consulta.');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleSectionClick = (e, sectionId) => {

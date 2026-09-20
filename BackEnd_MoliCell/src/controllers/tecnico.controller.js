@@ -1,10 +1,5 @@
 const tecnicoService = require('../services/tecnico.service');
-
-// #8 Helper: valida que un param sea un entero positivo
-const parsearIdParam = (valor) => {
-    const num = parseInt(valor, 10);
-    return (!isNaN(num) && num > 0) ? num : null;
-};
+const parsearIdParam = require('../utils/parsearIdParam');
 
 const crearServicioTecnico = async (req, res) => {
     try {

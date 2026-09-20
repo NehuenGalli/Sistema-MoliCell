@@ -1,4 +1,5 @@
 const marcaService = require('../services/marca.service');
+const parsearIdParam = require('../utils/parsearIdParam');
 
 const crearMarca = async (req, res) => {
     try {
@@ -18,7 +19,9 @@ const obtenerMarcas = async (req, res) => {
 
 const obtenerMarcaPorId = async (req, res) => {
     try {
-        const marca = await marcaService.obtenerMarcaPorId(req.params.id);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de marca inválido' });
+        const marca = await marcaService.obtenerMarcaPorId(id);
         if (!marca) {
             return res.status(404).json({ error: 'Marca no encontrada' });
         }
@@ -29,7 +32,9 @@ const obtenerMarcaPorId = async (req, res) => {
 
 const eliminarMarca = async (req, res) => {
     try {
-        const marca = await marcaService.eliminarMarca(req.params.id);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de marca inválido' });
+        const marca = await marcaService.eliminarMarca(id);
         if (!marca) {
             return res.status(404).json({ error: 'Marca no encontrada' });
         }
@@ -41,7 +46,9 @@ const eliminarMarca = async (req, res) => {
 
 const actualizarMarca = async (req, res) => {
     try {
-        const marca = await marcaService.actualizarMarca(req.params.id, req.body);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de marca inválido' });
+        const marca = await marcaService.actualizarMarca(id, req.body);
         if (!marca) {
             return res.status(404).json({ error: 'Marca no encontrada' });
         }

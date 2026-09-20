@@ -6,14 +6,28 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "init-db": "node src/config/setupDB.js",
+    "migrate:audit": "node src/config/migracion_auditoria.js",
     "seed-admin": "node src/config/seed_admin.js",
     "seed:catalog": "node src/config/seed_treinta_catalog.js",
-    "test": "cross-env NODE_ENV=test jest --runInBand --forceExit --detectOpenHandles"
+    "test": "cross-env NODE_ENV=test jest --runInBand --forceExit --detectOpenHandles",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --runInBand --forceExit --detectOpenHandles"
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["./tests/setup.js"],
-    "testMatch": ["**/tests/**/*.test.js"]
+    "setupFilesAfterEnv": [
+      "./tests/setup.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 60,
+        "functions": 85,
+        "lines": 80
+      }
+    }
   },
   "keywords": [],
   "author": "",
@@ -27,10 +41,9 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
     "helmet": "^8.3.0",
-    "joi": "^18.2.3",
+    "joi": "^18.2.5",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.2.0",
-    "multer-storage-cloudinary": "^2.2.1",
+    "multer": "^2.3.0",
     "pg": "^8.22.0"
   },
   "devDependencies": {

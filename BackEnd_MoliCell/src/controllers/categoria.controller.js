@@ -1,4 +1,5 @@
 const categoriaService = require('../services/categoria.service');
+const parsearIdParam = require('../utils/parsearIdParam');
 
 const crearCategoria = async (req, res) => {
     try {
@@ -18,7 +19,9 @@ const obtenerCategorias = async (req, res) => {
 
 const obtenerCategoriaPorId = async (req, res) => {
     try {
-        const categoria = await categoriaService.obtenerCategoriaPorId(req.params.id);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de categoría inválido' });
+        const categoria = await categoriaService.obtenerCategoriaPorId(id);
         if (!categoria) {
             return res.status(404).json({ error: 'Categoría no encontrada' });
         }
@@ -29,7 +32,9 @@ const obtenerCategoriaPorId = async (req, res) => {
 
 const eliminarCategoria = async (req, res) => {
     try {
-        const categoria = await categoriaService.eliminarCategoria(req.params.id);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de categoría inválido' });
+        const categoria = await categoriaService.eliminarCategoria(id);
         if (!categoria) {
             return res.status(404).json({ error: 'Categoría no encontrada' });
         }
@@ -41,7 +46,9 @@ const eliminarCategoria = async (req, res) => {
 
 const actualizarCategoria = async (req, res) => {
     try {
-        const categoria = await categoriaService.actualizarCategoria(req.params.id, req.body);
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de categoría inválido' });
+        const categoria = await categoriaService.actualizarCategoria(id, req.body);
         if (!categoria) {
             return res.status(404).json({ error: 'Categoría no encontrada' });
         }

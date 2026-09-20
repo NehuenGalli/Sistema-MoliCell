@@ -1,5 +1,5 @@
 import { Percent, Truck } from 'lucide-react';
-import heroBannerImg from '../../assets/aaaa.png';
+import heroBannerImg from '../../assets/aaaa.webp';
 import './Hero.css';
 
 const Hero = () => {

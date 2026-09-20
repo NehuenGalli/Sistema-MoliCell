@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const route = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
+const { requireAdmin } = require('../middlewares/authMiddleware');
 const { crearServicioTecnicoSchema, actualizarServicioTecnicoSchema } = require('../validators/servicioTecnicoValidator');
 const validarSchema = require('../middlewares/validarSchema');
 const tecnicoController = require('../controllers/tecnico.controller');
@@ -19,11 +20,11 @@ const seguimientoLimiter = rateLimit({
 route.get('/seguimiento/:codigo', seguimientoLimiter, tecnicoController.obtenerServicioTecnicoPorCodigo);
 
 // Rutas PROTEGIDAS para Admin
-route.post('/', authMiddleware, validarSchema(crearServicioTecnicoSchema), tecnicoController.crearServicioTecnico);
-route.get('/', authMiddleware, tecnicoController.obtenerServiciosTecnicos);
-route.get('/:id', authMiddleware, tecnicoController.obtenerServicioTecnicoPorId);
-route.put('/:id', authMiddleware, validarSchema(actualizarServicioTecnicoSchema), tecnicoController.actualizarServicioTecnico);
-route.patch('/:id', authMiddleware, validarSchema(actualizarServicioTecnicoSchema), tecnicoController.actualizarServicioTecnico);
-route.delete('/:id', authMiddleware, tecnicoController.eliminarServicioTecnico);
+route.post('/', authMiddleware, requireAdmin, validarSchema(crearServicioTecnicoSchema), tecnicoController.crearServicioTecnico);
+route.get('/', authMiddleware, requireAdmin, tecnicoController.obtenerServiciosTecnicos);
+route.get('/:id', authMiddleware, requireAdmin, tecnicoController.obtenerServicioTecnicoPorId);
+route.put('/:id', authMiddleware, requireAdmin, validarSchema(actualizarServicioTecnicoSchema), tecnicoController.actualizarServicioTecnico);
+route.patch('/:id', authMiddleware, requireAdmin, validarSchema(actualizarServicioTecnicoSchema), tecnicoController.actualizarServicioTecnico);
+route.delete('/:id', authMiddleware, requireAdmin, tecnicoController.eliminarServicioTecnico);
 
 module.exports = route;

@@ -6,9 +6,11 @@
   "main": "agent.js",
   "scripts": {
     "start": "node agent.js",
-    "build:windows": "pkg agent.js --targets node18-win-x64 --output MoliCellThermalPrintAgent.exe"
+    "build:windows": "pkg agent.js --targets node22-win-x64 --output MoliCellThermalPrintAgent.exe",
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=65 --test-coverage-branches=65 --test-coverage-functions=80"
   },
   "devDependencies": {
-    "pkg": "^5.8.1"
+    "@yao-pkg/pkg": "^6.22.0"
   }
 }

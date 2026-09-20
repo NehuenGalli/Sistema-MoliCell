@@ -8,7 +8,6 @@ import {
   createAdminMarca,
   deleteAdminMarca
 } from '../services/adminApi';
-import './AdminCategoriesBrandsPage.css';
 
 export default function AdminCategoriesBrandsPage() {
   const [activeTab, setActiveTab] = useState('categorias');

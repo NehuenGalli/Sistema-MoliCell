@@ -35,6 +35,16 @@ describe('Auth Middleware — Protección de rutas', () => {
         expect(res.body.error).toBe('Token inválido o expirado');
     });
 
+    it('debería tratar una cookie mal codificada como sesión inválida → 401', async () => {
+        const res = await request(app)
+            .post('/marca')
+            .set('Cookie', 'molicell_admin_session=%')
+            .send({ name: 'TestMarca' });
+
+        expect(res.status).toBe(401);
+        expect(res.body.error).toBe('Token no proporcionado');
+    });
+
     it('debería rechazar petición con token firmado con un secret diferente → 401', async () => {
         const tokenFalso = jwt.sign(
             { id: 1, email: 'test@molicell.com' },

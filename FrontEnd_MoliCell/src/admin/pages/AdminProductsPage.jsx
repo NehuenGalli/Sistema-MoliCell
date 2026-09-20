@@ -27,7 +27,6 @@ import {
   fetchAdminMarcas,
   createAdminMarca
 } from '../services/adminApi';
-import './AdminProductsPage.css';
 
 export default function AdminProductsPage() {
   const [productos, setProductos] = useState([]);
@@ -106,19 +105,13 @@ export default function AdminProductsPage() {
     return numStr ? parseFloat(numStr) : '';
   };
 
-  const loadInitialData = useCallback(async () => {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     setErrorLoad('');
     try {
       const incluirInactivos = filterParams.status !== 'activos';
-      const [prods, cats, mrcs] = await Promise.all([
-        fetchAdminProductos(incluirInactivos),
-        fetchAdminCategorias(),
-        fetchAdminMarcas()
-      ]);
+      const prods = await fetchAdminProductos(incluirInactivos);
       setProductos(prods);
-      setCategorias(cats);
-      setMarcas(mrcs);
     } catch (err) {
       setErrorLoad(err.message || 'Error al conectar con la base de datos para cargar productos');
     } finally {
@@ -127,9 +120,23 @@ export default function AdminProductsPage() {
   }, [filterParams.status]);
 
   useEffect(() => {
-    const loadTimer = window.setTimeout(loadInitialData, 0);
+    const loadTimer = window.setTimeout(loadProducts, 0);
     return () => window.clearTimeout(loadTimer);
-  }, [loadInitialData]);
+  }, [loadProducts]);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([fetchAdminCategorias(), fetchAdminMarcas()])
+      .then(([cats, mrcs]) => {
+        if (!active) return;
+        setCategorias(cats);
+        setMarcas(mrcs);
+      })
+      .catch((err) => {
+        if (active) setErrorLoad(err.message || 'Error al cargar categorías y marcas');
+      });
+    return () => { active = false; };
+  }, []);
 
   const showToast = (text, type = 'success') => {
     setToastMsg({ text, type });
@@ -385,7 +392,7 @@ export default function AdminProductsPage() {
       }
       setIsModalOpen(false);
       stopCamera();
-      loadInitialData();
+      loadProducts();
     } catch (err) {
       showToast(err.message || 'Error al guardar el producto en el servidor', 'error');
     }
@@ -396,7 +403,7 @@ export default function AdminProductsPage() {
       try {
         await deleteAdminProducto(id);
         showToast('Producto dado de baja', 'success');
-        loadInitialData();
+        loadProducts();
       } catch (err) {
         showToast(err.message || 'Error al eliminar el producto', 'error');
       }
@@ -407,7 +414,7 @@ export default function AdminProductsPage() {
     try {
       await reactivarAdminProducto(id);
       showToast(`¡Producto "${name}" reactivado en catálogo!`, 'success');
-      loadInitialData();
+      loadProducts();
     } catch (err) {
       showToast(err.message || 'Error al reactivar el producto', 'error');
     }
@@ -540,7 +547,7 @@ export default function AdminProductsPage() {
           </div>
           <button 
             type="button" 
-            onClick={() => loadInitialData()} 
+            onClick={() => loadProducts()}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#991B1B', color: '#FFF', border: 'none', padding: '8px 14px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
           >
             <RefreshCw size={15} />

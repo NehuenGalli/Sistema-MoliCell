@@ -1,22 +1,37 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { loginAdmin } from '../services/adminApi';
+import { authService } from '../../services/authService';
 import AdminAuthContext from './AdminAuthContextStore';
 
 export const AdminAuthProvider = ({ children }) => {
-  const [adminUser, setAdminUser] = useState(() => {
-    const token = localStorage.getItem('molicell_admin_token');
-    const userStr = localStorage.getItem('molicell_admin_user');
-    if (token && userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch {
-        localStorage.removeItem('molicell_admin_user');
-      }
-    }
-    return null;
-  });
+  const location = useLocation();
+  const [adminUser, setAdminUser] = useState(() => authService.obtenerUsuarioActual());
+  const [sessionChecked, setSessionChecked] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const shouldValidateSession = location.pathname.startsWith('/admin')
+    && location.pathname !== '/admin/login'
+    && !adminUser
+    && !sessionChecked;
+  const initializing = shouldValidateSession;
+
+  useEffect(() => {
+    if (!shouldValidateSession) return;
+
+    let active = true;
+    authService.obtenerSesion()
+      .then((session) => {
+        if (active) setAdminUser(session.usuario || null);
+      })
+      .catch(() => {
+        if (active) setAdminUser(null);
+      })
+      .finally(() => {
+        if (active) setSessionChecked(true);
+      });
+    return () => { active = false; };
+  }, [shouldValidateSession]);
 
   // #14 Fix: usar try/finally para que loading siempre se resetee,
   // incluso si loginAdmin lanza una excepción no capturada
@@ -26,8 +41,6 @@ export const AdminAuthProvider = ({ children }) => {
       const res = await loginAdmin(email, password);
 
       if (res.success) {
-        localStorage.setItem('molicell_admin_token', res.token);
-        localStorage.setItem('molicell_admin_user', JSON.stringify(res.usuario));
         setAdminUser(res.usuario);
         return { success: true };
       }
@@ -40,14 +53,13 @@ export const AdminAuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('molicell_admin_token');
-    localStorage.removeItem('molicell_admin_user');
+  const logout = async () => {
+    await authService.logout();
     setAdminUser(null);
   };
 
   return (
-    <AdminAuthContext.Provider value={{ adminUser, isAuthenticated: Boolean(adminUser), login, logout, loading }}>
+    <AdminAuthContext.Provider value={{ adminUser, isAuthenticated: Boolean(adminUser), login, logout, loading, initializing }}>
       {children}
     </AdminAuthContext.Provider>
   );

@@ -144,4 +144,34 @@ main {
     font-size: 1.1rem;
   }
 }
+/* Feedback visual estable mientras se descargan las rutas diferidas. */
+.route-fallback,
+.admin-route-fallback {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.admin-route-fallback {
+  width: 100%;
+  min-height: 55vh;
+  background: #f8fafc;
+}
+
+.route-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #cbd5e1;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: route-loading-spin 0.7s linear infinite;
+}
+
+@keyframes route-loading-spin {
+  to { transform: rotate(360deg); }
+}
 

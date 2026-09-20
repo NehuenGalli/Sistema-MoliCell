@@ -26,7 +26,6 @@ import {
   deleteAdminReparacion 
 } from '../services/adminApi';
 import { printThermalTicket } from '../utils/printThermalTicket';
-import './AdminRepairsPage.css';
 
 export default function AdminRepairsPage() {
   const [reparaciones, setReparaciones] = useState([]);
@@ -142,9 +141,8 @@ export default function AdminRepairsPage() {
   const handleOpenCreateModal = () => {
     setEditingRepair(null);
     setFormErrors({});
-    const autoCode = `MC-${Math.floor(1000 + Math.random() * 9000)}`;
     setForm({
-      codigo: autoCode,
+      codigo: '',
       cliente: '',
       telefono: '',
       dispositivo: '',
@@ -186,7 +184,6 @@ export default function AdminRepairsPage() {
     setFormErrors({});
 
     const payload = {
-      codigo_seguimiento: form.codigo.trim() || `MC-${Math.floor(1000 + Math.random() * 9000)}`,
       cliente_nombre: form.cliente.trim(),
       cliente_telefono: form.telefono.trim(),
       dispositivo: form.dispositivo.trim(),

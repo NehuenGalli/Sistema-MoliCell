@@ -4,14 +4,15 @@ import {
   categoriaService,
   marcaService,
   tecnicoService,
-  ventaService
+  ventaService,
+  dashboardService
 } from '../../services';
 
 // ─── 1. AUTENTICACIÓN ────────────────────────────────────────────────────────
 export const loginAdmin = async (email, password) => {
   try {
     const data = await authService.login(email, password);
-    return { success: true, token: data.token, usuario: data.usuario };
+    return { success: true, usuario: data.usuario };
   } catch (err) {
     return { success: false, error: err.message || 'Credenciales inválidas' };
   }
@@ -166,12 +167,16 @@ export const deleteAdminReparacion = async (id) => {
 // ─── 5. VENTAS / PEDIDOS ──────────────────────────────────────────────────────
 export const fetchAdminVentas = async (params = {}) => {
   try {
-    const res = await ventaService.obtenerVentas(params);
-    return Array.isArray(res) ? res : (res?.data || []);
+    return await ventaService.obtenerVentas(params);
   } catch (e) {
     console.error('Error al obtener ventas:', e);
     throw e;
   }
+};
+
+export const fetchAdminResumen = async () => {
+  const res = await dashboardService.obtenerResumen();
+  return res?.data || res;
 };
 
 export const createAdminVenta = async (data) => {

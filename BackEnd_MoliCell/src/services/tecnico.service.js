@@ -90,7 +90,7 @@ const obtenerServiciosTecnicos = async (params = {}) => {
     const countResult = await pool.query(countQuery, values);
     const totalItems = parseInt(countResult.rows[0]?.total || 0, 10);
 
-    const limitNum = Math.max(1, parseInt(limit, 10) || 20);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const offset = (pageNum - 1) * limitNum;
 

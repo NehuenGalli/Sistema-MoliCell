@@ -2,22 +2,64 @@ const pool = require('../config/db');
 const crypto = require('crypto');
 const { ventaToResponseDTO } = require('../dtos/venta.dto');
 
+const businessError = (message, status) => {
+    const error = new Error(message);
+    error.status = status;
+    return error;
+};
+
 const crearVenta = async (ventaData) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
-        const { codigo_venta, monto, metodo_pago, productos } = ventaData;
+        const { codigo_venta, metodo_pago, productos } = ventaData;
         // #13 Fix: usar crypto.randomBytes para evitar colisiones (Math.random solo tiene 9000 valores)
         const codigoFinal = codigo_venta || `VEN-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
-        // 1. Separamos los datos en arrays planos para pasárselos a Postgres
-        const idsProductos = productos.map(p => p.producto_id);
-        const cantidades = productos.map(p => p.cantidad);
+        // Agrupar defensivamente evita descuentos inconsistentes si otro cliente
+        // omite la validación de unicidad del request.
+        const cantidadesPorProducto = new Map();
+        for (const item of productos) {
+            cantidadesPorProducto.set(
+                item.producto_id,
+                (cantidadesPorProducto.get(item.producto_id) || 0) + item.cantidad
+            );
+        }
+        const idsProductos = [...cantidadesPorProducto.keys()].sort((a, b) => a - b);
+        const cantidades = idsProductos.map((id) => cantidadesPorProducto.get(id));
+
+        // Bloquear filas antes de validar stock evita sobreventa entre requests concurrentes.
+        const productosResult = await client.query(
+            `SELECT id, precio, descuento, descuento_precio, stock, activo
+             FROM producto
+             WHERE id = ANY($1::int[])
+             ORDER BY id
+             FOR UPDATE`,
+            [idsProductos]
+        );
+
+        if (productosResult.rows.length !== idsProductos.length) {
+            throw businessError('No se puede crear la venta porque uno o más productos no existen.', 404);
+        }
+
+        let montoCalculado = 0;
+        for (const producto of productosResult.rows) {
+            const cantidad = cantidadesPorProducto.get(producto.id);
+            if (!producto.activo) throw businessError('Uno o más productos no están activos.', 409);
+            if (Number(producto.stock) < cantidad) {
+                throw businessError('No hay stock suficiente para uno o más productos de la lista.', 400);
+            }
+            const precioVigente = producto.descuento && producto.descuento_precio
+                ? Number(producto.descuento_precio)
+                : Number(producto.precio);
+            montoCalculado += precioVigente * cantidad;
+        }
+        montoCalculado = Math.round((montoCalculado + Number.EPSILON) * 100) / 100;
 
         // 2. Insertamos la venta principal con su código único
         const queryVenta = 'INSERT INTO venta (codigo_venta, monto, metodo_pago) VALUES ($1, $2, $3) RETURNING *';
-        const valuesVenta = [codigoFinal, monto, metodo_pago];
+        const valuesVenta = [codigoFinal, montoCalculado, metodo_pago];
         const resultVenta = await client.query(queryVenta, valuesVenta);
         const ventaId = resultVenta.rows[0].id;
 
@@ -28,7 +70,10 @@ const crearVenta = async (ventaData) => {
             FROM unnest($1::int[], $2::int[]) AS v(producto_id, cantidad)
             WHERE p.id = v.producto_id;
         `;
-        await client.query(queryUpdateStock, [idsProductos, cantidades]);
+        const stockResult = await client.query(queryUpdateStock, [idsProductos, cantidades]);
+        if (stockResult.rowCount !== idsProductos.length) {
+            throw businessError('No se pudo actualizar el stock de todos los productos.', 409);
+        }
 
         // 4. GUARDAR EN VENTA_DETALLE MASIVO
         const queryInsertDetalles = `
@@ -91,7 +136,7 @@ const obtenerVentas = async (params = {}) => {
     const totalItems = parseInt(countResult.rows[0]?.total || 0, 10);
 
     // 2. Parámetros de paginación en PostgreSQL (Default 15 ventas por página)
-    const limitNum = Math.max(1, parseInt(limit, 10) || 15);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 15));
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const offset = (pageNum - 1) * limitNum;
 

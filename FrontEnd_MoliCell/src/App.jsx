@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, useState, useEffect, useRef } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/navbar/Navbar';
 import Hero from './components/hero/Hero';
 import CategoryCarousel from './components/CategoryCarousel/CategoryCarousel';
@@ -8,10 +8,6 @@ import FeaturedProducts from './components/FeaturedProducts/FeaturedProducts';
 import BrandsBar from './components/BrandsBar/BrandsBar';
 import ProductCard from './components/ProductCard/ProductCard';
 import CartDrawer from './components/CartDrawer/CartDrawer';
-import ContactPage from './pages/ContactPage/ContactPage';
-import ProductPage from './pages/ProductPage/ProductPage';
-import TechnicalServicePage from './pages/TechnicalServicePage/TechnicalServicePage';
-import CatalogPage from './pages/CatalogPage/CatalogPage';
 import Footer from './components/Footer/Footer';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import { categoriaService, productoService } from './services';
@@ -19,15 +15,41 @@ import { categoriaService, productoService } from './services';
 // Importaciones del Panel de Administración
 import { AdminAuthProvider } from './admin/context/AdminAuthContext';
 import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
-import AdminLayout from './admin/components/AdminLayout';
-import AdminLoginPage from './admin/pages/AdminLoginPage';
-import AdminDashboardPage from './admin/pages/AdminDashboardPage';
-import AdminProductsPage from './admin/pages/AdminProductsPage';
-import AdminCategoriesBrandsPage from './admin/pages/AdminCategoriesBrandsPage';
-import AdminRepairsPage from './admin/pages/AdminRepairsPage';
-import AdminSalesPage from './admin/pages/AdminSalesPage';
+
+const ContactPage = lazy(() => import('./pages/ContactPage/ContactPage'));
+const ProductPage = lazy(() => import('./pages/ProductPage/ProductPage'));
+const TechnicalServicePage = lazy(() => import('./pages/TechnicalServicePage/TechnicalServicePage'));
+const CatalogPage = lazy(() => import('./pages/CatalogPage/CatalogPage'));
+const AdminLayout = lazy(() => import('./admin/components/AdminLayout'));
+const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'));
+const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage'));
+const AdminProductsPage = lazy(() => import('./admin/pages/AdminProductsPage'));
+const AdminCategoriesBrandsPage = lazy(() => import('./admin/pages/AdminCategoriesBrandsPage'));
+const AdminRepairsPage = lazy(() => import('./admin/pages/AdminRepairsPage'));
+const AdminSalesPage = lazy(() => import('./admin/pages/AdminSalesPage'));
 
 import './App.css';
+
+function RouteLoadingFallback({ admin = false }) {
+  return (
+    <div
+      className={admin ? 'admin-route-fallback' : 'route-fallback'}
+      role="status"
+      aria-live="polite"
+    >
+      <span className="route-loading-spinner" aria-hidden="true" />
+      Cargando…
+    </div>
+  );
+}
+
+function AdminPageBoundary({ children }) {
+  return (
+    <Suspense fallback={<RouteLoadingFallback admin />}>
+      {children}
+    </Suspense>
+  );
+}
 
 // ─── Componente para la Tienda Pública ────────────────────────────────────
 function PublicStoreLayout({ totalCartCount, categorias, isCartOpen, setIsCartOpen, cartItems, handleUpdateQuantity, handleRemoveItem, children }) {
@@ -102,6 +124,11 @@ function HomePage({ productos, loading, handleAddToCart }) {
 
 // ─── App principal ─────────────────────────────────────────────────────────
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const needsCatalogData = location.pathname === '/' || location.pathname === '/catalogo';
+  const categoriesLoaded = useRef(false);
+  const productsLoaded = useRef(false);
   const [categorias, setCategorias] = useState([]);
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -145,27 +172,40 @@ function App() {
   };
 
   useEffect(() => {
+    if (isAdminRoute) return;
+    if (categoriesLoaded.current && (!needsCatalogData || productsLoaded.current)) return;
+    let active = true;
+    if (needsCatalogData && !productsLoaded.current) setLoading(true);
     const fetchData = async () => {
       try {
         const [cats, prods] = await Promise.all([
-          categoriaService.obtenerCategorias(),
-          productoService.obtenerProductos()
+          categoriesLoaded.current ? Promise.resolve(null) : categoriaService.obtenerCategorias(),
+          needsCatalogData && !productsLoaded.current ? productoService.obtenerProductos() : Promise.resolve(null)
         ]);
-        if (Array.isArray(cats)) setCategorias(cats);
-        if (Array.isArray(prods)) setProductos(prods);
+        if (!active) return;
+        if (Array.isArray(cats)) {
+          setCategorias(cats);
+          categoriesLoaded.current = true;
+        }
+        if (Array.isArray(prods)) {
+          setProductos(prods);
+          productsLoaded.current = true;
+        }
       } catch (error) {
         console.error('Error al conectar con el backend:', error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     fetchData();
-  }, []);
+    return () => { active = false; };
+  }, [isAdminRoute, needsCatalogData]);
 
   return (
     <AdminAuthProvider>
       <ScrollToTop />
-      <Routes>
+      <Suspense fallback={<RouteLoadingFallback admin={isAdminRoute} />}>
+        <Routes>
         {/* ── RUTAS PÚBLICAS DE LA TIENDA ── */}
         <Route
           path="/"
@@ -267,13 +307,14 @@ function App() {
             </AdminProtectedRoute>
           }
         >
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="productos" element={<AdminProductsPage />} />
-          <Route path="categorias-marcas" element={<AdminCategoriesBrandsPage />} />
-          <Route path="reparaciones" element={<AdminRepairsPage />} />
-          <Route path="ventas" element={<AdminSalesPage />} />
+          <Route index element={<AdminPageBoundary><AdminDashboardPage /></AdminPageBoundary>} />
+          <Route path="productos" element={<AdminPageBoundary><AdminProductsPage /></AdminPageBoundary>} />
+          <Route path="categorias-marcas" element={<AdminPageBoundary><AdminCategoriesBrandsPage /></AdminPageBoundary>} />
+          <Route path="reparaciones" element={<AdminPageBoundary><AdminRepairsPage /></AdminPageBoundary>} />
+          <Route path="ventas" element={<AdminPageBoundary><AdminSalesPage /></AdminPageBoundary>} />
         </Route>
-      </Routes>
+        </Routes>
+      </Suspense>
     </AdminAuthProvider>
   );
 }

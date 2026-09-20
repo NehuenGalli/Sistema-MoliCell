@@ -106,8 +106,7 @@ describe('CRUD /marca', () => {
         it('debería manejar ID no numérico sin crashear', async () => {
             const res = await request(app).get('/marca/abc');
 
-            // No debe ser un 500 por crash
-            expect([400, 404, 500]).toContain(res.status);
+            expect(res.status).toBe(400);
         });
     });
 });

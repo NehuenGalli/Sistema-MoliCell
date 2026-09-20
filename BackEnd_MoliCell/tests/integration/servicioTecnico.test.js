@@ -216,6 +216,21 @@ describe('CRUD /tecnico — Servicio Técnico', () => {
 
             expect(res.status).toBe(400);
         });
+
+        it('debería aceptar presupuesto inicial en cero → 201', async () => {
+            const res = await request(app)
+                .post('/tecnico')
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    cliente_nombre: 'Sin diagnóstico',
+                    dispositivo: 'Moto G',
+                    falla_descripcion: 'A revisar',
+                    presupuesto_estimado: 0
+                });
+
+            expect(res.status).toBe(201);
+            expect(Number(res.body.presupuesto_estimado)).toBe(0);
+        });
     });
 
     // SEGURIDAD

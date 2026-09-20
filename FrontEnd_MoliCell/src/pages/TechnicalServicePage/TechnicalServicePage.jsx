@@ -73,9 +73,9 @@ export default function TechnicalServicePage() {
       `📱 *Dispositivo:* ${form.dispositivo.trim()}`,
       `🔧 *Problema:* ${form.tipoProblema || 'No especificado'}`,
       `📝 *Detalle:* ${form.explicacion.trim()}`
-    ].join('%0A%0A');
+    ].join('\n\n');
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
     setTimeout(() => {
       setForm({ nombre: '', dispositivo: '', tipoProblema: '', explicacion: '' });

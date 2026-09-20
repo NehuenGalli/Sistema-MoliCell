@@ -11,17 +11,17 @@ import {
   RefreshCw,
   ServerCrash
 } from 'lucide-react';
-import { 
-  fetchAdminProductos, 
-  fetchAdminReparaciones, 
-  fetchAdminVentas 
-} from '../services/adminApi';
-import './AdminDashboardPage.css';
+import { fetchAdminResumen } from '../services/adminApi';
 
 export default function AdminDashboardPage() {
-  const [productos, setProductos] = useState([]);
-  const [reparaciones, setReparaciones] = useState([]);
-  const [ventasData, setVentasData] = useState({ ventas: [], totalGeneral: 0 });
+  const [resumen, setResumen] = useState({
+    productos_activos: 0,
+    productos_stock_bajo: 0,
+    alertas_stock: [],
+    reparaciones_activas: 0,
+    reparaciones_recientes: [],
+    ventas_totales: 0
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(''); // #16 Fix: estado de error visible
 
@@ -30,31 +30,8 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError('');
     try {
-      const [prods, repsResult, vtsResult] = await Promise.all([
-        // Solo traer los primeros 50 productos para métricas de stock bajo
-        fetchAdminProductos({ incluirInactivos: false }),
-        // Solo las últimas 10 reparaciones para la tabla de actividad reciente
-        fetchAdminReparaciones({ limit: 10, page: 1 }),
-        // Solo la primera página para la tabla, pero también obtenemos totalItems del servidor
-        fetchAdminVentas({ limit: 10, page: 1 })
-      ]);
-
-      setProductos(prods || []);
-
-      // Normalizar reparaciones (puede venir con o sin paginación)
-      const repsArray = Array.isArray(repsResult)
-        ? repsResult
-        : (repsResult?.servicios || repsResult?.data || []);
-      setReparaciones(repsArray);
-
-      // #19 Fix: usar totalItems del servidor en lugar de sumar los items de la página
-      const ventasArray = Array.isArray(vtsResult)
-        ? vtsResult
-        : (vtsResult?.data || vtsResult?.ventas || []);
-      const totalItems = vtsResult?.pagination?.totalItems ?? ventasArray.length;
-      // Suma del monto de la página visible (solo indicativo)
-      const sumaVisible = ventasArray.reduce((acc, v) => acc + (Number(v.monto) || 0), 0);
-      setVentasData({ ventas: ventasArray, totalItems, sumaVisible });
+      const data = await fetchAdminResumen();
+      setResumen((current) => ({ ...current, ...data }));
 
     } catch (err) {
       setError(err.message || 'No se pudieron cargar los datos del servidor.');
@@ -68,10 +45,8 @@ export default function AdminDashboardPage() {
     return () => window.clearTimeout(loadTimer);
   }, []);
 
-  const lowStockProducts = productos.filter(p =>
-    (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 10) < 10
-  );
-  const activeRepairs = reparaciones.filter(r => r.estado !== 'Entregado');
+  const lowStockProducts = resumen.alertas_stock || [];
+  const reparaciones = resumen.reparaciones_recientes || [];
 
   // ── Estado: Cargando ──
   if (loading) {
@@ -133,7 +108,7 @@ export default function AdminDashboardPage() {
           <div className="metric-info">
             <span className="metric-label">Ventas Registradas</span>
             {/* #19 Fix: mostrar cantidad de ventas del servidor (totalItems), no suma de montos parcial */}
-            <h3 className="metric-value">{ventasData.totalItems?.toLocaleString('es-AR') ?? '—'}</h3>
+            <h3 className="metric-value">{Number(resumen.ventas_totales).toLocaleString('es-AR')}</h3>
             <span className="metric-subtext positive">
               <TrendingUp size={12} /> pedidos totales
             </span>
@@ -146,7 +121,7 @@ export default function AdminDashboardPage() {
           </div>
           <div className="metric-info">
             <span className="metric-label">Productos Activos</span>
-            <h3 className="metric-value">{productos.length}</h3>
+            <h3 className="metric-value">{Number(resumen.productos_activos).toLocaleString('es-AR')}</h3>
             <span className="metric-subtext">Catálogo en línea</span>
           </div>
         </div>
@@ -157,7 +132,7 @@ export default function AdminDashboardPage() {
           </div>
           <div className="metric-info">
             <span className="metric-label">Reparaciones Activas</span>
-            <h3 className="metric-value">{activeRepairs.length}</h3>
+            <h3 className="metric-value">{Number(resumen.reparaciones_activas).toLocaleString('es-AR')}</h3>
             <span className="metric-subtext warning">En taller o listas</span>
           </div>
         </div>
@@ -168,7 +143,7 @@ export default function AdminDashboardPage() {
           </div>
           <div className="metric-info">
             <span className="metric-label">Stock Bajo</span>
-            <h3 className="metric-value">{lowStockProducts.length}</h3>
+            <h3 className="metric-value">{Number(resumen.productos_stock_bajo).toLocaleString('es-AR')}</h3>
             <span className="metric-subtext urgent">Requieren reposición</span>
           </div>
         </div>

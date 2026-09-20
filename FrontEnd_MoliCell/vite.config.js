@@ -7,4 +7,20 @@ export default defineConfig({
   server: {
     host: true, // Exponer en la red local (IP) para celular
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/main.jsx', 'src/test/**'],
+      thresholds: {
+        statements: 65,
+        branches: 50,
+        functions: 55,
+        lines: 70,
+      },
+    },
+  },
 })

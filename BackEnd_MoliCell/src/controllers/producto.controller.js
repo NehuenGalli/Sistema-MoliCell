@@ -1,11 +1,6 @@
 const productoService = require('../services/producto.service');
 const { subirACloudinary } = require('../middlewares/uploadMiddleware');
-
-// #8 Helper: valida que un param sea un entero positivo
-const parsearIdParam = (valor) => {
-    const num = parseInt(valor, 10);
-    return (!isNaN(num) && num > 0) ? num : null;
-};
+const parsearIdParam = require('../utils/parsearIdParam');
 
 const crearProducto = async (req, res) => {
     try {
@@ -22,10 +17,10 @@ const crearProducto = async (req, res) => {
             files = [req.file];
         }
 
-        for (const file of files) {
-            const url = await subirACloudinary(file.buffer, 'molicell_productos', file.mimetype);
-            imagenesUrls.push(url);
-        }
+        const urlsSubidas = await Promise.all(
+            files.map((file) => subirACloudinary(file.buffer, 'molicell_productos', file.mimetype))
+        );
+        imagenesUrls.push(...urlsSubidas);
 
         if (imagenesUrls.length > 0) {
             req.body.imagenes = imagenesUrls;
@@ -38,7 +33,8 @@ const crearProducto = async (req, res) => {
         res.status(201).json(producto);
     } catch (error) {
         console.error('Error al crear el producto:', error);
-        res.status(400).json({ error: error.message || 'Error al crear el producto' });
+        const status = error.status && error.status >= 400 && error.status < 600 ? error.status : 400;
+        res.status(status).json({ error: status < 500 ? error.message : 'Error al almacenar las imágenes del producto' });
     }
 };
 
@@ -56,10 +52,9 @@ const actualizarProducto = async (req, res) => {
             files = [req.file];
         }
 
-        for (const file of files) {
-            const url = await subirACloudinary(file.buffer, 'molicell_productos', file.mimetype);
-            imagenesSubidas.push(url);
-        }
+        imagenesSubidas = await Promise.all(
+            files.map((file) => subirACloudinary(file.buffer, 'molicell_productos', file.mimetype))
+        );
 
         if (imagenesSubidas.length > 0 || req.body.imagenes !== undefined) {
             const imagenesExistentes = Array.isArray(req.body.imagenes) ? req.body.imagenes : [];
@@ -78,7 +73,8 @@ const actualizarProducto = async (req, res) => {
         }
         res.status(200).json(producto);
     } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar el producto' });
+        const status = error.status && error.status >= 400 && error.status < 600 ? error.status : 500;
+        res.status(status).json({ error: status < 500 ? error.message : 'Error al actualizar el producto' });
     }
 };
 

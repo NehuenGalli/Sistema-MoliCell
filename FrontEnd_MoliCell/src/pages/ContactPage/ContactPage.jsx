@@ -42,9 +42,9 @@ export default function ContactPage() {
       asunto ? `Asunto: *${asunto.trim()}*` : '',
       '',
       mensaje.trim(),
-    ].join('%0A');
+    ].join('\n');
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
     setTimeout(() => {
       setForm({ nombre: '', apellido: '', asunto: '', mensaje: '' });

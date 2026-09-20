@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
+const { requireAdmin } = require('../middlewares/authMiddleware');
 const validarSchema = require('../middlewares/validarSchema');
 const { upload } = require('../middlewares/uploadMiddleware');
 const { crearProductoSchema, actualizarProductoSchema } = require('../validators/productoValidator');
@@ -81,11 +82,11 @@ const uploadFiles = upload.fields([
 ]);
 
 // CRUD PRODUCTOS - Rutas protegidas (admin)
-router.get('/admin/todos', authMiddleware, prodController.obtenerProductosAdmin);
-router.post('/', authMiddleware, uploadFiles, preprocesarBody, validarSchema(crearProductoSchema), prodController.crearProducto);
-router.patch('/:id', authMiddleware, uploadFiles, preprocesarBody, validarSchema(actualizarProductoSchema), prodController.actualizarProducto);
-router.patch('/:id/reactivar', authMiddleware, prodController.reactivarProducto);
-router.delete('/:id', authMiddleware, prodController.eliminarProducto);
+router.get('/admin/todos', authMiddleware, requireAdmin, prodController.obtenerProductosAdmin);
+router.post('/', authMiddleware, requireAdmin, uploadFiles, preprocesarBody, validarSchema(crearProductoSchema), prodController.crearProducto);
+router.patch('/:id', authMiddleware, requireAdmin, uploadFiles, preprocesarBody, validarSchema(actualizarProductoSchema), prodController.actualizarProducto);
+router.patch('/:id/reactivar', authMiddleware, requireAdmin, prodController.reactivarProducto);
+router.delete('/:id', authMiddleware, requireAdmin, prodController.eliminarProducto);
 
 // OPERACIONES CON PRODUCTOS - Rutas públicas
 router.get('/', prodController.obtenerProductos);
@@ -93,4 +94,4 @@ router.get('/:id', prodController.obtenerProductoPorId);
 router.get('/categoria/:categoria_id', prodController.obtenerProductosPorCategoria);
 router.get('/marca/:marca_id', prodController.obtenerProductosPorMarca);
 
-module.exports = router;  
+module.exports = router;

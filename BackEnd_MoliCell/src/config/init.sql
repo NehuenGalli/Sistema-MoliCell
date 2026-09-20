@@ -38,6 +38,7 @@ CREATE TABLE usuario (
     id SERIAL PRIMARY KEY,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    rol VARCHAR(20) NOT NULL DEFAULT 'admin' CHECK (rol IN ('admin')),
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 ); 
 
@@ -68,3 +69,11 @@ CREATE TABLE venta_detalle (
     producto_id INT NOT NULL REFERENCES producto(id) ON DELETE RESTRICT,
     cantidad INT NOT NULL CONSTRAINT chk_cantidad_positiva CHECK (cantidad > 0)
 );
+
+CREATE INDEX idx_producto_activo_stock ON producto (activo, stock);
+CREATE INDEX idx_producto_marca ON producto (marca_id);
+CREATE INDEX idx_producto_categoria_categoria ON producto_categoria (categoria_id, producto_id);
+CREATE INDEX idx_servicio_tecnico_estado_creado ON servicio_tecnico (estado, creado_en DESC);
+CREATE INDEX idx_servicio_tecnico_codigo_upper ON servicio_tecnico (UPPER(codigo_seguimiento));
+CREATE INDEX idx_venta_creado ON venta (creado_en DESC);
+CREATE INDEX idx_venta_detalle_venta ON venta_detalle (venta_id);

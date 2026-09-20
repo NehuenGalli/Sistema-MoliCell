@@ -1,10 +1,14 @@
 const ventaService = require('../services/venta.service');
+const parsearIdParam = require('../utils/parsearIdParam');
 
 const crearVenta = async (req, res) => {
     try {
         const venta = await ventaService.crearVenta(req.body);
         return res.status(201).json({ message: 'Venta agregada exitosamente', data: venta });
     } catch (error) {
+        if (error.status) {
+            return res.status(error.status).json({ error: error.message });
+        }
         if (error.code === '23514' && error.constraint === 'check_stock_positivo') {
             return res.status(400).json({
                 error: 'No hay stock suficiente para uno o más productos de la lista.'
@@ -34,7 +38,8 @@ const obtenerVentas = async (req, res) => {
 
 const obtenerVentaPorId = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de venta inválido' });
         const venta = await ventaService.obtenerVentaPorId(id);
         if (!venta) {
             return res.status(404).json({ error: 'Venta no encontrada' });
@@ -46,7 +51,8 @@ const obtenerVentaPorId = async (req, res) => {
 
 const eliminarVenta = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = parsearIdParam(req.params.id);
+        if (!id) return res.status(400).json({ error: 'ID de venta inválido' });
         const venta = await ventaService.eliminarVenta(id);
         if (!venta) {
             return res.status(404).json({ error: 'Venta no encontrada' });

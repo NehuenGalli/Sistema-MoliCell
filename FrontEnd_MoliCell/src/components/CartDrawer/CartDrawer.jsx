@@ -31,9 +31,9 @@ const CartDrawer = ({
             ``,
             `💰 *TOTAL:* ${formatPrice(total)}`,
             `📍 Por favor indicar método de pago (Efectivo/Transferencia/Tarjeta) y si retira por el local o prefiere envío.`
-        ].join('%0A');
+        ].join('\n');
 
-        window.open(`https://wa.me/5491134324675?text=${mensaje}`, '_blank');
+        window.open(`https://wa.me/5491134324675?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener,noreferrer');
     };
 
     return (

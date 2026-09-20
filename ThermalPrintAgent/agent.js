@@ -25,6 +25,15 @@ const config = loadConfig();
 const PRINT_DEDUP_WINDOW_MS = 5000;
 const activePrints = new Set();
 const recentPrints = new Map();
+const printAttempts = [];
+const PRINT_RATE_WINDOW_MS = 60 * 1000;
+const MAX_PRINTS_PER_WINDOW = 20;
+
+function httpError(message, status) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}
 
 function loadConfig() {
   if (!existsSync(CONFIG_PATH)) return { ...DEFAULT_CONFIG };
@@ -78,19 +87,25 @@ function sendJson(response, status, body) {
 function readJson(request) {
   return new Promise((resolve, reject) => {
     let body = '';
+    let bytes = 0;
+    let rejected = false;
     request.setEncoding('utf8');
     request.on('data', (chunk) => {
+      if (rejected) return;
+      bytes += Buffer.byteLength(chunk, 'utf8');
       body += chunk;
-      if (body.length > 64 * 1024) {
-        reject(new Error('El ticket excede el tamaño permitido.'));
-        request.destroy();
+      if (bytes > 32 * 1024) {
+        rejected = true;
+        reject(httpError('El ticket excede el tamaño permitido.', 413));
+        request.resume();
       }
     });
     request.on('end', () => {
+      if (rejected) return;
       try {
         resolve(JSON.parse(body || '{}'));
       } catch {
-        reject(new Error('El formato del ticket no es válido.'));
+        reject(httpError('El formato del ticket no es válido.', 400));
       }
     });
     request.on('error', reject);
@@ -99,7 +114,11 @@ function readJson(request) {
 
 async function listPrinters() {
   const command = 'Get-CimInstance Win32_Printer | Select-Object Name,Default,WorkOffline,DriverName | ConvertTo-Json -Compress';
-  const { stdout } = await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], { windowsHide: true });
+  const { stdout } = await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], {
+    windowsHide: true,
+    timeout: 10000,
+    maxBuffer: 1024 * 1024,
+  });
   const data = stdout.trim() ? JSON.parse(stdout) : [];
   return Array.isArray(data) ? data : [data];
 }
@@ -110,7 +129,7 @@ function choosePrinter(printers, requestedPrinter) {
   if (requested) {
     const match = online.find((printer) => printer.Name === requested);
     if (match) return match.Name;
-    throw new Error(`La impresora configurada "${requested}" no está disponible.`);
+    throw httpError(`La impresora configurada "${requested}" no está disponible.`, 503);
   }
 
   const thermal = online.find((printer) => /pos|term|thermal|ticket|58|xp-|epson|gadnic/i.test(`${printer.Name} ${printer.DriverName || ''}`));
@@ -119,7 +138,7 @@ function choosePrinter(printers, requestedPrinter) {
   const defaultPrinter = online.find((printer) => printer.Default);
   if (defaultPrinter) return defaultPrinter.Name;
 
-  throw new Error('No se encontró una impresora disponible. Conectá e instalá la POS-58 en Windows.');
+  throw httpError('No se encontró una impresora disponible. Conectá e instalá la POS-58 en Windows.', 503);
 }
 
 function createEscPosDocument(text) {
@@ -179,10 +198,28 @@ $bytes = [Convert]::FromBase64String('${dataBase64}')
 [MoliCellRawPrinter]::Send($printer, $bytes)
 `;
   const encodedScript = Buffer.from(script, 'utf16le').toString('base64');
-  await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', encodedScript], { windowsHide: true });
+  await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', encodedScript], {
+    windowsHide: true,
+    timeout: 15000,
+    maxBuffer: 1024 * 1024,
+  });
 }
 
-const server = http.createServer(async (request, response) => {
+function consumePrintRateLimit(now = Date.now(), attempts = printAttempts) {
+  while (attempts.length && now - attempts[0] >= PRINT_RATE_WINDOW_MS) attempts.shift();
+  if (attempts.length >= MAX_PRINTS_PER_WINDOW) return false;
+  attempts.push(now);
+  return true;
+}
+
+function pruneRecentPrints(now = Date.now(), prints = recentPrints) {
+  for (const [fingerprint, timestamp] of prints) {
+    if (now - timestamp >= PRINT_DEDUP_WINDOW_MS) prints.delete(fingerprint);
+  }
+}
+
+function createAgentServer() {
+  return http.createServer(async (request, response) => {
   const corsAllowed = setCorsHeaders(request, response);
   if (request.method === 'OPTIONS') {
     response.writeHead(corsAllowed ? 204 : 403);
@@ -205,11 +242,16 @@ const server = http.createServer(async (request, response) => {
       return;
     }
     if (request.method === 'POST' && request.url === '/print') {
-      const { text, printerName } = await readJson(request);
-      if (typeof text !== 'string' || !text.trim()) throw new Error('El ticket está vacío.');
-      const printer = choosePrinter(await listPrinters(), printerName);
+      if (!String(request.headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+        throw httpError('Content-Type debe ser application/json.', 415);
+      }
+      if (!consumePrintRateLimit()) throw httpError('Demasiadas impresiones. Esperá un minuto e intentá nuevamente.', 429);
+      const { text } = await readJson(request);
+      if (typeof text !== 'string' || !text.trim()) throw httpError('El ticket está vacío.', 400);
+      const printer = choosePrinter(await listPrinters(), config.printerName);
       const fingerprint = createHash('sha256').update(`${printer}\u0000${text}`).digest('hex');
       const now = Date.now();
+      pruneRecentPrints(now);
       const previousPrint = recentPrints.get(fingerprint);
 
       // Defensa adicional: aunque el navegador reintente o se hagan varios
@@ -232,10 +274,29 @@ const server = http.createServer(async (request, response) => {
     sendJson(response, 404, { error: 'Ruta no encontrada.' });
   } catch (error) {
     console.error('Error de impresión:', error.message);
-    sendJson(response, 500, { error: error.message || 'No se pudo imprimir el ticket.' });
+    const status = Number.isInteger(error.status) ? error.status : 500;
+    sendJson(response, status, {
+      error: status < 500 ? error.message : 'No se pudo imprimir el ticket.'
+    });
   }
-});
+  });
+}
 
-server.listen(config.port, '127.0.0.1', () => {
-  console.log(`MoliCell Thermal Print Agent listo en http://127.0.0.1:${config.port}`);
-});
+if (require.main === module) {
+  const server = createAgentServer();
+  server.listen(config.port, '127.0.0.1', () => {
+    console.log(`MoliCell Thermal Print Agent listo en http://127.0.0.1:${config.port}`);
+  });
+}
+
+module.exports = {
+  choosePrinter,
+  consumePrintRateLimit,
+  createAgentServer,
+  createEscPosDocument,
+  isAllowedOrigin,
+  loadConfig,
+  pruneRecentPrints,
+  readJson,
+  setCorsHeaders,
+};

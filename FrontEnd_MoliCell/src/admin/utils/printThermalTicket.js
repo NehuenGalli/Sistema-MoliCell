@@ -84,7 +84,7 @@ function addTable(lines, table) {
   });
 }
 
-function ticketToPlainText(ticket) {
+export function ticketToPlainText(ticket) {
   const lines = [];
 
   Array.from(ticket.children).forEach((section) => {

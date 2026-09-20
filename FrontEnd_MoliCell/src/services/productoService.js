@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient, { cachedGet, invalidateGetCache } from './apiClient';
 
 /**
  * Servicio para consumir la API de Productos del Backend
@@ -10,7 +10,7 @@ export const productoService = {
    */
   obtenerProductos: async (params = {}) => {
     const queryParams = typeof params === 'boolean' ? { incluirSinStock: params } : params;
-    return await apiClient.get('/producto', { params: queryParams });
+    return await cachedGet('/producto', { params: queryParams }, 15000);
   },
 
   /**
@@ -19,7 +19,7 @@ export const productoService = {
    */
   obtenerProductosAdmin: async (params = {}) => {
     const queryParams = typeof params === 'boolean' ? { incluirInactivos: params } : params;
-    return await apiClient.get('/producto/admin/todos', { params: queryParams });
+    return await cachedGet('/producto/admin/todos', { params: queryParams }, 5000);
   },
 
   /**
@@ -27,7 +27,7 @@ export const productoService = {
    * GET /producto/:id
    */
   obtenerProductoPorId: async (id) => {
-    return await apiClient.get(`/producto/${id}`);
+    return await cachedGet(`/producto/${id}`, {}, 15000);
   },
 
   /**
@@ -35,7 +35,7 @@ export const productoService = {
    * GET /producto/categoria/:categoria_id
    */
   obtenerProductosPorCategoria: async (categoriaId) => {
-    return await apiClient.get(`/producto/categoria/${categoriaId}`);
+    return await cachedGet(`/producto/categoria/${categoriaId}`, {}, 15000);
   },
 
   /**
@@ -43,7 +43,7 @@ export const productoService = {
    * GET /producto/marca/:marca_id
    */
   obtenerProductosPorMarca: async (marcaId) => {
-    return await apiClient.get(`/producto/marca/${marcaId}`);
+    return await cachedGet(`/producto/marca/${marcaId}`, {}, 15000);
   },
 
   /**
@@ -53,7 +53,10 @@ export const productoService = {
    */
   crearProducto: async (datosProducto) => {
     const payload = prepararPayloadProducto(datosProducto);
-    return await apiClient.post('/producto', payload);
+    const result = await apiClient.post('/producto', payload);
+    invalidateGetCache('/producto');
+    invalidateGetCache('/dashboard');
+    return result;
   },
 
   /**
@@ -62,7 +65,10 @@ export const productoService = {
    */
   actualizarProducto: async (id, datosProducto) => {
     const payload = prepararPayloadProducto(datosProducto);
-    return await apiClient.patch(`/producto/${id}`, payload);
+    const result = await apiClient.patch(`/producto/${id}`, payload);
+    invalidateGetCache('/producto');
+    invalidateGetCache('/dashboard');
+    return result;
   },
 
   /**
@@ -70,7 +76,10 @@ export const productoService = {
    * PATCH /producto/:id/reactivar
    */
   reactivarProducto: async (id) => {
-    return await apiClient.patch(`/producto/${id}/reactivar`);
+    const result = await apiClient.patch(`/producto/${id}/reactivar`);
+    invalidateGetCache('/producto');
+    invalidateGetCache('/dashboard');
+    return result;
   },
 
   /**
@@ -78,14 +87,17 @@ export const productoService = {
    * DELETE /producto/:id
    */
   eliminarProducto: async (id) => {
-    return await apiClient.delete(`/producto/${id}`);
+    const result = await apiClient.delete(`/producto/${id}`);
+    invalidateGetCache('/producto');
+    invalidateGetCache('/dashboard');
+    return result;
   }
 };
 
 /**
  * Convierte un objeto plano de JS a FormData si contiene archivos de imagen
  */
-function prepararPayloadProducto(datos) {
+export function prepararPayloadProducto(datos) {
   if (datos instanceof FormData) {
     return datos;
   }
