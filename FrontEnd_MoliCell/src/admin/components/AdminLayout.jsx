@@ -6,6 +6,7 @@ import {
   Tags, 
   Wrench, 
   Receipt, 
+  WalletCards,
   ExternalLink, 
   LogOut, 
   Menu, 
@@ -22,6 +23,7 @@ import '../pages/AdminProductsPage.css';
 import '../pages/AdminCategoriesBrandsPage.css';
 import '../pages/AdminRepairsPage.css';
 import '../pages/AdminSalesPage.css';
+import '../pages/ManagementPage.css';
 
 // #18 Fix: mapa de rutas → títulos dinámicos para el header
 const ROUTE_TITLES = {
@@ -30,6 +32,7 @@ const ROUTE_TITLES = {
   '/admin/categorias-marcas': 'Categorías & Marcas',
   '/admin/reparaciones': 'Servicio Técnico',
   '/admin/ventas': 'Ventas & Pedidos',
+  '/admin/gastos': 'Gastos',
 };
 
 const getPageTitle = (pathname) => {
@@ -109,6 +112,11 @@ export default function AdminLayout() {
           <NavLink to="/admin/ventas" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
             <Receipt size={18} />
             <span>Ventas & Pedidos</span>
+          </NavLink>
+
+          <NavLink to="/admin/gastos" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <WalletCards size={18} />
+            <span>Gastos</span>
           </NavLink>
         </nav>
 

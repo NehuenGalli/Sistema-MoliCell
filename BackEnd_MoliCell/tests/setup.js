@@ -7,6 +7,9 @@ const pool = require('../src/config/db');
 beforeAll(async () => {
     // 1. Eliminar tablas en orden inverso de dependencias (para evitar errores de FK)
     await pool.query(`
+        DROP TABLE IF EXISTS deuda_pago CASCADE;
+        DROP TABLE IF EXISTS deuda CASCADE;
+        DROP TABLE IF EXISTS gasto CASCADE;
         DROP TABLE IF EXISTS venta_detalle CASCADE;
         DROP TABLE IF EXISTS venta CASCADE;
         DROP TABLE IF EXISTS producto_categoria CASCADE;

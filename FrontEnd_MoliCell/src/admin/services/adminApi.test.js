@@ -5,6 +5,9 @@ import {
   createAdminProducto,
   createAdminReparacion,
   createAdminVenta,
+  createAdminGasto,
+  deleteAdminGasto,
+  fetchAdminGastos,
   deleteAdminCategoria,
   deleteAdminMarca,
   deleteAdminProducto,
@@ -19,8 +22,9 @@ import {
   reactivarAdminProducto,
   updateAdminProducto,
   updateAdminReparacion,
+  updateAdminGasto,
 } from './adminApi';
-import { authService, categoriaService, dashboardService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
+import { authService, categoriaService, dashboardService, gastoService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
 
 vi.mock('../../services', () => ({
   authService: { login: vi.fn() },
@@ -36,6 +40,7 @@ vi.mock('../../services', () => ({
     actualizarServicioTecnico: vi.fn(), eliminarServicioTecnico: vi.fn(),
   },
   ventaService: { obtenerVentas: vi.fn(), crearVenta: vi.fn() },
+  gastoService: { obtenerGastos: vi.fn(), crearGasto: vi.fn(), actualizarGasto: vi.fn(), eliminarGasto: vi.fn() },
 }));
 
 describe('fachada adminApi', () => {
@@ -51,6 +56,7 @@ describe('fachada adminApi', () => {
       tecnicoService.obtenerServiciosTecnicos, tecnicoService.crearServicioTecnico,
       tecnicoService.actualizarServicioTecnico, tecnicoService.eliminarServicioTecnico,
       ventaService.obtenerVentas, ventaService.crearVenta,
+      gastoService.obtenerGastos, gastoService.crearGasto, gastoService.actualizarGasto, gastoService.eliminarGasto,
     ];
     services.forEach((service) => service.mockResolvedValue({ data: { id: 1 }, usuario: { id: 1 }, token: 'ignored' }));
   });
@@ -62,6 +68,7 @@ describe('fachada adminApi', () => {
     await fetchAdminMarcas();
     await fetchAdminReparaciones({ page: 1 });
     await fetchAdminVentas({ page: 1 });
+    await fetchAdminGastos({ periodo: 'mes' });
     await expect(fetchAdminResumen()).resolves.toEqual({ id: 1 });
   });
 
@@ -78,6 +85,9 @@ describe('fachada adminApi', () => {
     await updateAdminReparacion(1, { estado: 'Listo' });
     await expect(deleteAdminReparacion(1)).resolves.toBe(true);
     await expect(createAdminVenta({ productos: [] })).resolves.toEqual({ id: 1 });
+    await createAdminGasto({ monto: 1 });
+    await updateAdminGasto(1, { monto: 2 });
+    await deleteAdminGasto(1);
   });
 
   it('convierte el fallo de login y propaga errores operativos', async () => {

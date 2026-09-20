@@ -6,3 +6,4 @@ export { authService } from './authService';
 export { tecnicoService } from './tecnicoService';
 export { ventaService } from './ventaService';
 export { dashboardService } from './dashboardService';
+export { gastoService } from './gastoService';

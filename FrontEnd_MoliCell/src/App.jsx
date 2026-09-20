@@ -27,6 +27,7 @@ const AdminProductsPage = lazy(() => import('./admin/pages/AdminProductsPage'));
 const AdminCategoriesBrandsPage = lazy(() => import('./admin/pages/AdminCategoriesBrandsPage'));
 const AdminRepairsPage = lazy(() => import('./admin/pages/AdminRepairsPage'));
 const AdminSalesPage = lazy(() => import('./admin/pages/AdminSalesPage'));
+const AdminExpensesPage = lazy(() => import('./admin/pages/AdminExpensesPage'));
 
 import './App.css';
 
@@ -312,6 +313,7 @@ function App() {
           <Route path="categorias-marcas" element={<AdminPageBoundary><AdminCategoriesBrandsPage /></AdminPageBoundary>} />
           <Route path="reparaciones" element={<AdminPageBoundary><AdminRepairsPage /></AdminPageBoundary>} />
           <Route path="ventas" element={<AdminPageBoundary><AdminSalesPage /></AdminPageBoundary>} />
+          <Route path="gastos" element={<AdminPageBoundary><AdminExpensesPage /></AdminPageBoundary>} />
         </Route>
         </Routes>
       </Suspense>
