@@ -5,6 +5,12 @@ const migrar = async () => {
     try {
         await client.query('BEGIN');
         await client.query(`
+            ALTER TABLE servicio_tecnico ADD COLUMN IF NOT EXISTS fecha_reconocimiento TIMESTAMP WITH TIME ZONE;
+            UPDATE servicio_tecnico SET fecha_reconocimiento = creado_en
+            WHERE fecha_reconocimiento IS NULL AND estado IN ('Listo', 'Entregado');
+            CREATE INDEX IF NOT EXISTS idx_servicio_tecnico_reconocimiento
+            ON servicio_tecnico (fecha_reconocimiento DESC) WHERE fecha_reconocimiento IS NOT NULL;
+
             ALTER TABLE venta ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12, 2);
             ALTER TABLE venta ADD COLUMN IF NOT EXISTS descuento_porcentaje NUMERIC(5, 2) DEFAULT 0;
             ALTER TABLE venta ADD COLUMN IF NOT EXISTS descuento_monto NUMERIC(12, 2) DEFAULT 0;

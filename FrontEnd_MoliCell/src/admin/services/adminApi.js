@@ -7,7 +7,8 @@ import {
   ventaService,
   dashboardService,
   gastoService,
-  deudaService
+  deudaService,
+  gananciaService
 } from '../../services';
 
 // ─── 1. AUTENTICACIÓN ────────────────────────────────────────────────────────
@@ -205,3 +206,6 @@ export const updateAdminDeuda = (id, data) => deudaService.actualizarDeuda(id, d
 export const deleteAdminDeuda = (id) => deudaService.eliminarDeuda(id);
 export const createAdminDeudaPago = (id, data) => deudaService.registrarPago(id, data);
 export const deleteAdminDeudaPago = (id, pagoId) => deudaService.eliminarPago(id, pagoId);
+
+// ─── 8. GANANCIAS ────────────────────────────────────────────────────────────
+export const fetchAdminGanancias = (params = {}) => gananciaService.obtenerGanancias(params);

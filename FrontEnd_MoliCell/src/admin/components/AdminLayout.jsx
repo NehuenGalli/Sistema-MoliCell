@@ -8,6 +8,7 @@ import {
   Receipt, 
   WalletCards,
   Users,
+  TrendingUp,
   ExternalLink, 
   LogOut, 
   Menu, 
@@ -35,6 +36,7 @@ const ROUTE_TITLES = {
   '/admin/ventas': 'Ventas & Pedidos',
   '/admin/gastos': 'Gastos',
   '/admin/deudores': 'Deudores',
+  '/admin/ganancias': 'Ganancias',
 };
 
 const getPageTitle = (pathname) => {
@@ -124,6 +126,11 @@ export default function AdminLayout() {
           <NavLink to="/admin/deudores" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
             <Users size={18} />
             <span>Deudores</span>
+          </NavLink>
+
+          <NavLink to="/admin/ganancias" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <TrendingUp size={18} />
+            <span>Ganancias</span>
           </NavLink>
         </nav>
 

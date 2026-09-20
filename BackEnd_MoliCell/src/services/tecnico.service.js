@@ -13,8 +13,8 @@ const crearServicioTecnico = async (datosServicioTecnico) => {
     const codigo_seguimiento = datosServicioTecnico.codigo_seguimiento || generarCodigoSeguimiento();
 
     const query = `
-        INSERT INTO servicio_tecnico (codigo_seguimiento, cliente_nombre, cliente_telefono, dispositivo, falla_descripcion, presupuesto_estimado, estado)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO servicio_tecnico (codigo_seguimiento, cliente_nombre, cliente_telefono, dispositivo, falla_descripcion, presupuesto_estimado, estado, fecha_reconocimiento)
+        VALUES ($1, $2, $3, $4, $5, $6, $7::varchar, CASE WHEN $7::varchar IN ('Listo', 'Entregado') THEN NOW() ELSE NULL END)
         RETURNING *;
     `;
     const values = [codigo_seguimiento, cliente_nombre, cliente_telefono, dispositivo, falla_descripcion, presupuesto_estimado, estado];
@@ -40,7 +40,11 @@ const actualizarServicioTecnico = async (id, datosServicioTecnico) => {
 
     const keys = Object.keys(camposAActualizar);
     // Ahora es seguro porque 'keys' solo contiene valores de 'camposPermitidos'
-    const setClause = keys.map((key, index) => `${key} = $${index + 2}`).join(', ');
+    const setParts = keys.map((key, index) => `${key} = $${index + 2}`);
+    if (['Listo', 'Entregado'].includes(datosServicioTecnico.estado)) {
+        setParts.push('fecha_reconocimiento = COALESCE(fecha_reconocimiento, NOW())');
+    }
+    const setClause = setParts.join(', ');
     const values = [id, ...Object.values(camposAActualizar)];
 
     const query = `

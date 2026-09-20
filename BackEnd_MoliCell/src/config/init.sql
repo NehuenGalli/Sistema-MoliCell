@@ -51,6 +51,7 @@ CREATE TABLE servicio_tecnico (
     falla_descripcion TEXT,
     presupuesto_estimado NUMERIC(12, 2),
     estado VARCHAR(50) DEFAULT 'Pendiente' CHECK (estado IN ('Pendiente', 'En Proceso', 'Listo', 'Entregado')),
+    fecha_reconocimiento TIMESTAMP WITH TIME ZONE,
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -118,6 +119,7 @@ CREATE INDEX idx_producto_marca ON producto (marca_id);
 CREATE INDEX idx_producto_categoria_categoria ON producto_categoria (categoria_id, producto_id);
 CREATE INDEX idx_servicio_tecnico_estado_creado ON servicio_tecnico (estado, creado_en DESC);
 CREATE INDEX idx_servicio_tecnico_codigo_upper ON servicio_tecnico (UPPER(codigo_seguimiento));
+CREATE INDEX idx_servicio_tecnico_reconocimiento ON servicio_tecnico (fecha_reconocimiento DESC) WHERE fecha_reconocimiento IS NOT NULL;
 CREATE INDEX idx_venta_creado ON venta (creado_en DESC);
 CREATE INDEX idx_venta_detalle_venta ON venta_detalle (venta_id);
 CREATE INDEX idx_gasto_fecha ON gasto (fecha DESC, id DESC);

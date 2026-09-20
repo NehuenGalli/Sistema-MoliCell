@@ -24,6 +24,7 @@ import {
   fetchAdminReparaciones,
   fetchAdminResumen,
   fetchAdminVentas,
+  fetchAdminGanancias,
   loginAdmin,
   reactivarAdminProducto,
   updateAdminProducto,
@@ -31,7 +32,7 @@ import {
   updateAdminGasto,
   updateAdminDeuda,
 } from './adminApi';
-import { authService, categoriaService, dashboardService, deudaService, gastoService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
+import { authService, categoriaService, dashboardService, deudaService, gananciaService, gastoService, marcaService, productoService, tecnicoService, ventaService } from '../../services';
 
 vi.mock('../../services', () => ({
   authService: { login: vi.fn() },
@@ -49,6 +50,7 @@ vi.mock('../../services', () => ({
   ventaService: { obtenerVentas: vi.fn(), crearVenta: vi.fn() },
   gastoService: { obtenerGastos: vi.fn(), crearGasto: vi.fn(), actualizarGasto: vi.fn(), eliminarGasto: vi.fn() },
   deudaService: { obtenerDeudas: vi.fn(), obtenerDeuda: vi.fn(), crearDeuda: vi.fn(), actualizarDeuda: vi.fn(), eliminarDeuda: vi.fn(), registrarPago: vi.fn(), eliminarPago: vi.fn() },
+  gananciaService: { obtenerGanancias: vi.fn() },
 }));
 
 describe('fachada adminApi', () => {
@@ -67,6 +69,7 @@ describe('fachada adminApi', () => {
       gastoService.obtenerGastos, gastoService.crearGasto, gastoService.actualizarGasto, gastoService.eliminarGasto,
       deudaService.obtenerDeudas, deudaService.obtenerDeuda, deudaService.crearDeuda, deudaService.actualizarDeuda,
       deudaService.eliminarDeuda, deudaService.registrarPago, deudaService.eliminarPago,
+      gananciaService.obtenerGanancias,
     ];
     services.forEach((service) => service.mockResolvedValue({ data: { id: 1 }, usuario: { id: 1 }, token: 'ignored' }));
   });
@@ -81,6 +84,7 @@ describe('fachada adminApi', () => {
     await fetchAdminGastos({ periodo: 'mes' });
     await fetchAdminDeudas({ estado: 'activas' });
     await fetchAdminDeuda(1);
+    await fetchAdminGanancias({ periodo: 'mes' });
     await expect(fetchAdminResumen()).resolves.toEqual({ id: 1 });
   });
 
