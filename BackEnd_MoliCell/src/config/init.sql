@@ -58,6 +58,9 @@ CREATE TABLE venta (
     id SERIAL PRIMARY KEY,
     codigo_venta VARCHAR(30) UNIQUE,
     monto NUMERIC(12, 2) NOT NULL CONSTRAINT chk_monto_positivo CHECK (monto >= 0),
+    subtotal NUMERIC(12, 2) NOT NULL CONSTRAINT chk_subtotal_positivo CHECK (subtotal >= 0),
+    descuento_porcentaje NUMERIC(5, 2) NOT NULL DEFAULT 0 CONSTRAINT chk_descuento_porcentaje CHECK (descuento_porcentaje BETWEEN 0 AND 100),
+    descuento_monto NUMERIC(12, 2) NOT NULL DEFAULT 0 CONSTRAINT chk_descuento_monto CHECK (descuento_monto >= 0),
     metodo_pago VARCHAR(50) NOT NULL,
     fecha DATE NOT NULL DEFAULT CURRENT_DATE,
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -67,7 +70,9 @@ CREATE TABLE venta_detalle (
     id SERIAL PRIMARY KEY,
     venta_id INT NOT NULL REFERENCES venta(id) ON DELETE CASCADE,
     producto_id INT NOT NULL REFERENCES producto(id) ON DELETE RESTRICT,
-    cantidad INT NOT NULL CONSTRAINT chk_cantidad_positiva CHECK (cantidad > 0)
+    cantidad INT NOT NULL CONSTRAINT chk_cantidad_positiva CHECK (cantidad > 0),
+    precio_unitario NUMERIC(12, 2) NOT NULL CHECK (precio_unitario >= 0),
+    costo_unitario NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (costo_unitario >= 0)
 );
 
 CREATE TABLE gasto (

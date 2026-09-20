@@ -53,6 +53,10 @@ export default function AdminSalesPage() {
     items: [],
     selectedQuantity: 1
   });
+  const draftSubtotal = newSale.items.reduce((sum, item) => sum + item.subtotal, 0);
+  const draftDiscountRate = newSale.metodo_pago === 'Efectivo' ? 15 : 0;
+  const draftDiscount = Math.round((draftSubtotal * draftDiscountRate / 100 + Number.EPSILON) * 100) / 100;
+  const draftTotal = Math.round((draftSubtotal - draftDiscount + Number.EPSILON) * 100) / 100;
 
   // Modal Ticket (Impresión) y Modal Detalles
   const [selectedSaleForTicket, setSelectedSaleForTicket] = useState(null);
@@ -294,11 +298,9 @@ export default function AdminSalesPage() {
       return;
     }
 
-    const totalAmount = newSale.items.reduce((sum, item) => sum + item.subtotal, 0);
-
     const payload = {
       codigo_venta: newSale.codigo_venta || `VEN-${Math.floor(1000 + Math.random() * 9000)}`,
-      monto: totalAmount,
+      monto: draftTotal,
       metodo_pago: newSale.metodo_pago,
       productos: newSale.items.map(item => ({
         producto_id: parseInt(item.producto_id, 10),
@@ -701,6 +703,11 @@ export default function AdminSalesPage() {
                   <option value="Tarjeta de Débito">Tarjeta de Débito</option>
                   <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
                 </select>
+                {newSale.metodo_pago === 'Efectivo' && (
+                  <span style={{ color: '#166534', fontWeight: 700, fontSize: '0.82rem', marginTop: '6px', display: 'block' }}>
+                    Se aplicará automáticamente un 15 % de descuento por pago en efectivo.
+                  </span>
+                )}
               </div>
 
               {/* Selector de Producto con Búsqueda Escribible en Vivo (0 db queries) */}
@@ -856,11 +863,13 @@ export default function AdminSalesPage() {
               </div>
 
               {/* Total de la Venta */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F1F5F9', padding: '10px 14px', borderRadius: '8px' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A', letterSpacing: '0.2px' }}>TOTAL A COBRAR:</span>
-                <strong style={{ fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>
-                  ${newSale.items.reduce((sum, item) => sum + item.subtotal, 0).toLocaleString('es-AR')}
-                </strong>
+              <div style={{ background: '#F1F5F9', padding: '10px 14px', borderRadius: '8px', display: 'grid', gap: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.83rem', color: '#475569' }}><span>Subtotal:</span><strong>${draftSubtotal.toLocaleString('es-AR')}</strong></div>
+                {draftDiscountRate > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.83rem', color: '#166534' }}><span>Descuento efectivo ({draftDiscountRate}%):</span><strong>− ${draftDiscount.toLocaleString('es-AR')}</strong></div>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #CBD5E1', paddingTop: '7px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A', letterSpacing: '0.2px' }}>TOTAL A COBRAR:</span>
+                  <strong style={{ fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>${draftTotal.toLocaleString('es-AR')}</strong>
+                </div>
               </div>
 
               {/* Botones del Footer Centrados (Recuadrar Naranja) */}
@@ -1090,6 +1099,13 @@ export default function AdminSalesPage() {
               </table>
 
               <div className="ticket-divider"></div>
+
+              {Number(selectedSaleForTicket.descuento_monto) > 0 && (
+                <div className="ticket-meta">
+                  <div className="meta-row"><span>Subtotal:</span><strong>${Number(selectedSaleForTicket.subtotal).toLocaleString('es-AR')}</strong></div>
+                  <div className="meta-row"><span>Descuento efectivo ({Number(selectedSaleForTicket.descuento_porcentaje)}%):</span><strong>− ${Number(selectedSaleForTicket.descuento_monto).toLocaleString('es-AR')}</strong></div>
+                </div>
+              )}
 
               <div className="ticket-total-box">
                 <span>TOTAL:</span>

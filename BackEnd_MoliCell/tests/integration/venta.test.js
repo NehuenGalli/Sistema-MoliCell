@@ -41,7 +41,10 @@ describe('CRUD /venta', () => {
             expect(res.status).toBe(201);
             expect(res.body.message).toBe('Venta agregada exitosamente');
             expect(res.body.data).toHaveProperty('id');
-            expect(res.body.data.monto).toBe(1000); // 2 × $500; ignora el monto manipulado del cliente
+            expect(res.body.data.subtotal).toBe(1000);
+            expect(res.body.data.descuento_porcentaje).toBe(15);
+            expect(res.body.data.descuento_monto).toBe(150);
+            expect(res.body.data.monto).toBe(850); // 2 × $500 menos 15 % por pago en efectivo
             ventaCreada = res.body.data;
 
             // Verificar que el stock se descontó
@@ -63,6 +66,7 @@ describe('CRUD /venta', () => {
                 });
 
             expect(res.status).toBe(201);
+            expect(res.body.data).toMatchObject({ subtotal: 900, descuento_porcentaje: 0, descuento_monto: 0, monto: 900 });
 
             // Verificar descuento de stock de ambos
             const resP1 = await request(app).get(`/producto/${producto1.id}`);
@@ -92,6 +96,7 @@ describe('CRUD /venta', () => {
             expect(res.body.data).toHaveProperty('metodo_pago');
             expect(res.body.data).toHaveProperty('productos');
             expect(Array.isArray(res.body.data.productos)).toBe(true);
+            expect(res.body.data.productos[0].precio).toBe(500);
         });
 
         it('debería eliminar venta → 200 + restaurar stock', async () => {
@@ -131,7 +136,8 @@ describe('CRUD /venta', () => {
                 });
 
             expect(res.status).toBe(201);
-            expect(res.body.data.monto).toBe(500);
+            expect(res.body.data.subtotal).toBe(500);
+            expect(res.body.data.monto).toBe(425);
         });
 
         it('debería rechazar venta sin productos → 400', async () => {
