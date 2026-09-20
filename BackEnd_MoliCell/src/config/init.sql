@@ -83,6 +83,31 @@ CREATE TABLE gasto (
     actualizado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE deuda (
+    id SERIAL PRIMARY KEY,
+    persona_nombre VARCHAR(120) NOT NULL,
+    telefono VARCHAR(50),
+    concepto VARCHAR(240) NOT NULL,
+    origen VARCHAR(20) NOT NULL CHECK (origen IN ('Venta', 'Servicio', 'Otro')),
+    referencia VARCHAR(80),
+    monto_total NUMERIC(12, 2) NOT NULL CHECK (monto_total > 0),
+    fecha DATE NOT NULL DEFAULT CURRENT_DATE,
+    vencimiento DATE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente' CHECK (estado IN ('Pendiente', 'Parcial', 'Pagada')),
+    notas TEXT,
+    creado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    actualizado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE deuda_pago (
+    id SERIAL PRIMARY KEY,
+    deuda_id INT NOT NULL REFERENCES deuda(id) ON DELETE CASCADE,
+    monto NUMERIC(12, 2) NOT NULL CHECK (monto > 0),
+    fecha DATE NOT NULL DEFAULT CURRENT_DATE,
+    notas VARCHAR(500),
+    creado_en TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX idx_producto_activo_stock ON producto (activo, stock);
 CREATE INDEX idx_producto_marca ON producto (marca_id);
 CREATE INDEX idx_producto_categoria_categoria ON producto_categoria (categoria_id, producto_id);
@@ -92,3 +117,5 @@ CREATE INDEX idx_venta_creado ON venta (creado_en DESC);
 CREATE INDEX idx_venta_detalle_venta ON venta_detalle (venta_id);
 CREATE INDEX idx_gasto_fecha ON gasto (fecha DESC, id DESC);
 CREATE INDEX idx_gasto_categoria_fecha ON gasto (categoria, fecha DESC);
+CREATE INDEX idx_deuda_estado_fecha ON deuda (estado, fecha DESC);
+CREATE INDEX idx_deuda_pago_deuda_fecha ON deuda_pago (deuda_id, fecha DESC, id DESC);
